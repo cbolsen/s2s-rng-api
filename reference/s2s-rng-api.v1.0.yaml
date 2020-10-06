@@ -315,11 +315,6 @@ paths:
                     type: string
                     example: '9.3'
                     description: RNG server version number
-                  serverTime:
-                    type: string
-                    format: date-time
-                    example: '2020-09-30T18:30:23Z'
-                    description: Current system time of the RNG server
                   rngBusinessDay:
                     type: integer
                     description: Business day under which the transaction was recorded. Format is YYMMDD.
@@ -342,10 +337,6 @@ paths:
                           type: integer
                           description: Identifier of the product definition drawn
                           minimum: 0
-                        drawMatrix:
-                          $ref: '#/components/schemas/DrawMatrix'
-                        distribution:
-                          $ref: '#/components/schemas/Distribution'
                         drawTime:
                           type: string
                           format: date-time
@@ -375,9 +366,7 @@ paths:
                       description: Success
                     serverId: RNG-TEST-87
                     serverVersion: '9.3'
-                    serverTime: '2020-09-30T18:30:23Z'
                     rngBusinessDay: 200930
-                    testMode: false
                     drawResults:
                       - drawStatus:
                           code: 0
@@ -401,7 +390,6 @@ paths:
                     serverId: RNG-TEST-87
                     serverVersion: '9.3'
                     rngBusinessDay: 200930
-                    testMode: false
                     drawResults:
                       - clientRequestId: RQID-31234545-32
                         drawStatus:
