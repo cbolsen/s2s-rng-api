@@ -222,33 +222,33 @@ paths:
             examples:
               Minimal Example:
                 value:
-                  draw-requests:
-                    - product-id: 1002
-                      number-of-sets: 1
+                  drawRequests:
+                    - productId: 1002
+                      numberOfSets: 1
               Example:
                 value:
-                  client-transaction-id: ID-102030450-11
-                  client-business-day: 200930
-                  test-mode: true
-                  draw-users:
+                  clientTransactionId: ID-102030450-11
+                  clientBusinessDay: 200930
+                  testMode: true
+                  drawUsers:
                     - name: Jane Doe
-                      login-time: '2020-09-30T15:47:44Z'
+                      loginTime: '2020-09-30T15:47:44Z'
                     - name: John Smith
-                      login-time: '2020-09-30T15:56:01Z'
-                  draw-requests:
-                    - client-request-id: DRAW-31234545-32
-                      client-hash: 9498A934974997B9723498A93D92498397BC70B
-                      client-string: XTRA-DRAW
-                      product-id: 1006
-                      number-of-sets: 2
-                      draw-matrix:
-                        set-size: 5
-                        min-value: 1
-                        max-value: 39
-                        with-replacement: true
-                      extract-data:
-                        extract-type: TYPE1
-                        extract-fields:
+                      loginTime: '2020-09-30T15:56:01Z'
+                  drawRequests:
+                    - clientRequestId: DRAW-31234545-32
+                      clientHash: 9498A934974997B9723498A93D92498397BC70B
+                      clientString: XTRA-DRAW
+                      productId: 1006
+                      numberOfSets: 2
+                      drawMatrix:
+                        setSize: 5
+                        minValue: 1
+                        maxValue: 39
+                        withReplacement: true
+                      extractData:
+                        extractType: TYPE1
+                        extractFields:
                           - '1234'
                           - ''
                           - '23485'
