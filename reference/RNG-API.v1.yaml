@@ -1,0 +1,379 @@
+openapi: 3.0.0
+info:
+  title: S2S RNG API
+  version: 1.0.0
+  description: Szrek2Solutions Random Number Generator API
+  contact:
+    url: 'http://www.szrek.com'
+servers:
+  - url: 'http://localhost:55002/s2s-rng-api/v1.0'
+paths:
+  /draws/regular-draws:
+    post:
+      summary: ''
+      operationId: post-draws-regular-draws
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client-transaction-id:
+                    type: string
+                    description: Client's unique ID for this transaction
+                  transaction-status:
+                    $ref: '#/components/schemas/Status'
+                  server-id:
+                    type: string
+                    example: RNG-TEST-87
+                    description: RNG server identifier
+                  server-version:
+                    type: string
+                    example: '9.3'
+                    description: RNG server version number
+                  server-time:
+                    type: string
+                    format: date-time
+                    example: '2020-09-30T18:30:23Z'
+                    description: Current system time of the RNG server
+                  rng-business-day:
+                    type: integer
+                    description: Business day under which the transaction was recorded. Format is YYMMDD.
+                    minimum: 0
+                    example: 200930
+                  test-mode:
+                    type: boolean
+                    description: Marks the draw results as "test mode" and not valid for use
+                  draw-results:
+                    type: array
+                    description: 'Array of results objects, corresponding to array of requests'
+                    items:
+                      type: object
+                      properties:
+                        client-request-id:
+                          type: string
+                          description: Client's unique identifier for this draw request
+                        draw-status:
+                          $ref: '#/components/schemas/Status'
+                        product-id:
+                          type: integer
+                          description: Identifier of the product definition drawn
+                          minimum: 0
+                        draw-matrix:
+                          $ref: '#/components/schemas/DrawMatrix'
+                        distribution:
+                          $ref: '#/components/schemas/Distribution'
+                        record-id:
+                          type: string
+                          description: Unique record identifier for the draw
+                          example: EX191109870000000125
+                        record-handle:
+                          type: integer
+                          description: Handle that can optionally be used for faster verification processing
+                          format: int64
+                          minimum: -1
+                        sets:
+                          type: array
+                          description: Numbers drawn
+                          items:
+                            type: array
+                            items:
+                              type: integer
+                              minimum: 0
+                      required:
+                        - draw-status
+              examples:
+                Minimal Example:
+                  value:
+                    transaction-status:
+                      code: 0
+                      description: Success
+                    server-id: RNG-TEST-87
+                    server-version: '9.3'
+                    server-time: '2020-09-30T18:30:23Z'
+                    rng-business-day: 200930
+                    test-mode: false
+                    draw-results:
+                      - draw-status:
+                          code: 0
+                          description: Success
+                        product-id: 1002
+                        number-of-sets: 1
+                        draw-matrix:
+                          set-size: 6
+                          min-value: 1
+                          max-value: 49
+                          with-replacement: true
+                        record-id: EX191109870000000125
+                        record-handle: -1
+                        sets:
+                          - - 9
+                            - 16
+                            - 26
+                            - 29
+                            - 37
+                            - 42
+                Example:
+                  value:
+                    client-transaction-id: TXID-102030450-11
+                    transaction-status:
+                      code: 0
+                      description: Success
+                    server-id: RNG-TEST-87
+                    server-version: '9.3'
+                    server-time: '2020-09-30T18:30:23Z'
+                    rng-business-day: 200930
+                    test-mode: true
+                    draw-results:
+                      - client-request-id: RQID-31234545-32
+                        draw-status:
+                          code: 0
+                          description: Success
+                        product-id: 1006
+                        number-of-sets: 2
+                        draw-matrix:
+                          set-size: 5
+                          min-value: 1
+                          max-value: 39
+                          with-replacement: true
+                        record-id: EX191109870000000125
+                        record-handle: 43543
+                        sets:
+                          - - 10
+                            - 21
+                            - 29
+                            - 35
+                            - 39
+                          - - 3
+                            - 8
+                            - 17
+                            - 22
+                            - 34
+        '400':
+          description: Bad Request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+      description: Create draws for regular draw games
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client-transaction-id:
+                  type: string
+                  description: Client's unique ID for this transaction
+                client-business-day:
+                  type: integer
+                  description: Client's current business day. Format is YYMMDD.
+                  minimum: 0
+                  example: 200930
+                test-mode:
+                  type: boolean
+                  description: Marks the draw results as "test mode" and not valid for use
+                draw-users:
+                  type: array
+                  description: Draw personnel names and login times to be included in the draw reports
+                  items:
+                    $ref: '#/components/schemas/DrawUsers'
+                draw-requests:
+                  type: array
+                  description: One or more draw requests to be processed
+                  items:
+                    type: object
+                    properties:
+                      client-request-id:
+                        type: string
+                        description: Client's unique identifier for this draw request
+                      client-hash:
+                        type: string
+                        description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets'
+                      client-string:
+                        type: string
+                        description: A text string that will be printed in the draw reports and also appended to the draw report file names
+                      product-id:
+                        type: integer
+                        description: 'Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
+                        minimum: 0
+                      number-of-sets:
+                        type: integer
+                        description: How many sets of numbers to draw
+                        minimum: 1
+                      draw-matrix:
+                        $ref: '#/components/schemas/DrawMatrix'
+                      distribution:
+                        $ref: '#/components/schemas/Distribution'
+                      extract-data:
+                        $ref: '#/components/schemas/ExtractData'
+                      draw-number:
+                        type: integer
+                        minimum: 0
+                    required:
+                      - product-id
+                      - number-of-sets
+              required:
+                - draw-requests
+            examples:
+              Minimal Example:
+                value:
+                  draw-requests:
+                    - product-id: 1002
+                      number-of-sets: 1
+              Example:
+                value:
+                  client-transaction-id: ID-102030450-11
+                  client-business-day: 200930
+                  test-mode: true
+                  draw-users:
+                    - name: Jane Doe
+                      login-time: '2020-09-30T15:47:44Z'
+                    - name: John Smith
+                      login-time: '2020-09-30T15:56:01Z'
+                  draw-requests:
+                    - client-request-id: DRAW-31234545-32
+                      client-hash: 9498A934974997B9723498A93D92498397BC70B
+                      client-string: XTRA-DRAW
+                      product-id: 1006
+                      number-of-sets: 2
+                      draw-matrix:
+                        set-size: 5
+                        min-value: 1
+                        max-value: 39
+                        with-replacement: true
+                      extract-data:
+                        extract-type: TYPE1
+                        extract-fields:
+                          - '1234'
+                          - ''
+                          - '23485'
+                          - ''
+                          - ''
+                          - 'true'
+                          - '30.00'
+        description: ''
+      parameters: []
+components:
+  schemas:
+    DrawUsers:
+      title: DrawUsers
+      type: object
+      description: 'Draw personnel to be included in the draw reports. The first user is the Draw Manager, second user is the Draw Auditor, and third is the Draw Observer.'
+      properties:
+        name:
+          type: string
+          description: Full name of the user as it should appear in the draw reports
+          example: John Smith
+        loginTime:
+          type: string
+          format: date-time
+          description: 'If included, the login time for the user will appear in the draw reports'
+          example: '2020-03-15T15:47:44Z'
+    DrawMatrix:
+      title: DrawMatrix
+      type: object
+      description: The RNG draw parameter matrix. The product definition may or may not allow overriding of these values
+      properties:
+        setSize:
+          type: integer
+          description: How many numbers in each set
+          minimum: 1
+          example: 6
+        minValue:
+          type: integer
+          description: Lowest number that can be drawn
+          minimum: 0
+          example: 1
+        maxValue:
+          type: integer
+          description: Highest number that can be drawn
+          minimum: 0
+          example: 49
+        withReplacement:
+          type: boolean
+          description: Specifies whether drawn numbers are replaced within a set
+        exclusions:
+          type: array
+          description: Values to be excluded from the draw
+          uniqueItems: true
+          items:
+            type: integer
+            minimum: 0
+            example: 0
+    Distribution:
+      title: Distribution
+      type: object
+      description: Initial distribution values and depletion type used for distribution-type products
+      properties:
+        values:
+          type: array
+          description: Initial distribution values
+          items:
+            type: integer
+            minimum: 0
+        depletionType:
+          type: string
+          enum:
+            - NoDepletion
+            - DecreaseEntry
+            - RemoveEntry
+          description: Specifies method of depletion for the distribution values
+          example: NoDepletion
+    ExtractData:
+      title: ExtractData
+      type: object
+      properties:
+        extract-type:
+          type: string
+          description: Used to define the CSV extract report options
+        extract-fields:
+          type: array
+          description: Positional data values that can be included in the CSV extract files. Field positions must be the same for all draws using the same extract type
+          items:
+            type: string
+      description: Optional data passed through to the audit process and optionally included in CSV extract files it creates
+    Status:
+      title: Status
+      type: object
+      description: Status code and description
+      properties:
+        code:
+          type: integer
+          description: Numeric error or status code
+        description:
+          type: string
+          description: Short description of the error or status code
+    FieldError:
+      title: FieldError
+      type: object
+      description: Details about a specific field error
+      properties:
+        code:
+          type: string
+          description: Error code name
+        message:
+          type: string
+          description: Additional detail about the error code
+        field-name:
+          type: string
+          description: 'Name of the field that caused the error, if applicable'
+        path:
+          type: string
+          description: 'Path to the field that caused the error, if applicable'
+    Error:
+      title: Error
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/Status'
+        fieldErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+security: []
