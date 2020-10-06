@@ -20,56 +20,56 @@ paths:
               schema:
                 type: object
                 properties:
-                  client-transaction-id:
+                  clientTransaction-id:
                     type: string
                     description: Client's unique ID for this transaction
-                  transaction-status:
+                  transactionStatus:
                     $ref: '#/components/schemas/Status'
-                  server-id:
+                  serverId:
                     type: string
                     example: RNG-TEST-87
                     description: RNG server identifier
-                  server-version:
+                  serverVersion:
                     type: string
                     example: '9.3'
                     description: RNG server version number
-                  server-time:
+                  serverTime:
                     type: string
                     format: date-time
                     example: '2020-09-30T18:30:23Z'
                     description: Current system time of the RNG server
-                  rng-business-day:
+                  rngBusinessDay:
                     type: integer
                     description: Business day under which the transaction was recorded. Format is YYMMDD.
                     minimum: 0
                     example: 200930
-                  test-mode:
+                  testMode:
                     type: boolean
                     description: Marks the draw results as "test mode" and not valid for use
-                  draw-results:
+                  drawResults:
                     type: array
                     description: 'Array of results objects, corresponding to array of requests'
                     items:
                       type: object
                       properties:
-                        client-request-id:
+                        clientRequestId:
                           type: string
                           description: Client's unique identifier for this draw request
-                        draw-status:
+                        drawStatus:
                           $ref: '#/components/schemas/Status'
-                        product-id:
+                        productId:
                           type: integer
                           description: Identifier of the product definition drawn
                           minimum: 0
-                        draw-matrix:
+                        drawMatrix:
                           $ref: '#/components/schemas/DrawMatrix'
                         distribution:
                           $ref: '#/components/schemas/Distribution'
-                        record-id:
+                        recordId:
                           type: string
                           description: Unique record identifier for the draw
                           example: EX191109870000000125
-                        record-handle:
+                        recordHandle:
                           type: integer
                           description: Handle that can optionally be used for faster verification processing
                           format: int64
@@ -83,7 +83,7 @@ paths:
                               type: integer
                               minimum: 0
                       required:
-                        - draw-status
+                        - drawStatus
               examples:
                 Minimal Example:
                   value:
@@ -157,9 +157,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Error'
       description: Create draws for regular draw games
       requestBody:
         content:
@@ -167,59 +165,60 @@ paths:
             schema:
               type: object
               properties:
-                client-transaction-id:
+                clientTransactionId:
                   type: string
                   description: Client's unique ID for this transaction
-                client-business-day:
+                clientBusinessDay:
                   type: integer
                   description: Client's current business day. Format is YYMMDD.
                   minimum: 0
                   example: 200930
-                test-mode:
+                testMode:
                   type: boolean
                   description: Marks the draw results as "test mode" and not valid for use
-                draw-users:
+                drawUsers:
                   type: array
                   description: Draw personnel names and login times to be included in the draw reports
                   items:
                     $ref: '#/components/schemas/DrawUsers'
-                draw-requests:
+                drawRequests:
                   type: array
                   description: One or more draw requests to be processed
                   items:
                     type: object
                     properties:
-                      client-request-id:
+                      clientRequestId:
                         type: string
                         description: Client's unique identifier for this draw request
-                      client-hash:
+                      clientHash:
                         type: string
                         description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets'
-                      client-string:
+                      clientString:
                         type: string
                         description: A text string that will be printed in the draw reports and also appended to the draw report file names
-                      product-id:
+                      productId:
                         type: integer
                         description: 'Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
                         minimum: 0
-                      number-of-sets:
+                      numberOfSets:
                         type: integer
                         description: How many sets of numbers to draw
                         minimum: 1
-                      draw-matrix:
+                      drawMatrix:
                         $ref: '#/components/schemas/DrawMatrix'
                       distribution:
                         $ref: '#/components/schemas/Distribution'
-                      extract-data:
+                      extractData:
                         $ref: '#/components/schemas/ExtractData'
-                      draw-number:
+                      drawNumber:
                         type: integer
                         minimum: 0
+                        example: 364
                     required:
-                      - product-id
-                      - number-of-sets
+                      - productId
+                      - numberOfSets
               required:
-                - draw-requests
+                - drawRequests
             examples:
               Minimal Example:
                 value:
@@ -328,16 +327,16 @@ components:
     ExtractData:
       title: ExtractData
       type: object
+      description: Optional data passed through to the audit process and optionally included in CSV extract files it creates
       properties:
-        extract-type:
+        extractType:
           type: string
           description: Used to define the CSV extract report options
-        extract-fields:
+        extractFields:
           type: array
           description: Positional data values that can be included in the CSV extract files. Field positions must be the same for all draws using the same extract type
           items:
             type: string
-      description: Optional data passed through to the audit process and optionally included in CSV extract files it creates
     Status:
       title: Status
       type: object
@@ -360,7 +359,7 @@ components:
         message:
           type: string
           description: Additional detail about the error code
-        field-name:
+        fieldName:
           type: string
           description: 'Name of the field that caused the error, if applicable'
         path:
