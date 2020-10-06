@@ -20,7 +20,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  clientTransaction-id:
+                  clientTransactionId:
                     type: string
                     description: Client's unique ID for this transaction
                     pattern: '^[A-Za-z0-9 -]+'
@@ -301,7 +301,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  clientTransaction-id:
+                  clientTransactionId:
                     type: string
                     description: Client's unique ID for this transaction
                     pattern: '^[A-Za-z0-9 -]+'
