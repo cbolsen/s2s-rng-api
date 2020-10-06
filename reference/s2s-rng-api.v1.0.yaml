@@ -23,7 +23,6 @@ paths:
                   clientTransactionId:
                     type: string
                     description: Client's unique ID for this transaction
-                    pattern: '^[A-Za-z0-9 -]+'
                   transactionStatus:
                     $ref: '#/components/schemas/Status'
                   serverId:
@@ -42,7 +41,6 @@ paths:
                   rngBusinessDay:
                     type: integer
                     description: Business day under which the transaction was recorded. Format is YYMMDD.
-                    minimum: 0
                     example: 200930
                   testMode:
                     type: boolean
@@ -56,14 +54,12 @@ paths:
                         clientRequestId:
                           type: string
                           description: Client's unique identifier for this draw request
-                          pattern: '^[A-Za-z0-9 -]+'
                           example: RQID-31234545-32
                         drawStatus:
                           $ref: '#/components/schemas/Status'
                         productId:
                           type: integer
                           description: Identifier of the product definition drawn
-                          minimum: 0
                         drawMatrix:
                           $ref: '#/components/schemas/DrawMatrix'
                         distribution:
@@ -81,7 +77,6 @@ paths:
                           type: integer
                           description: Handle that can optionally be used for faster verification processing
                           format: int64
-                          minimum: -1
                         sets:
                           type: array
                           description: Numbers drawn
@@ -89,7 +84,6 @@ paths:
                             type: array
                             items:
                               type: integer
-                              minimum: 0
                       required:
                         - drawStatus
               examples:
@@ -191,11 +185,9 @@ paths:
                   description: Client's unique ID for this transaction
                   format: int64
                   example: TXID-102030450-11
-                  pattern: '^[A-Za-z0-9 -]+'
                 clientBusinessDay:
                   type: integer
                   description: Client's current business day. Format is YYMMDD.
-                  minimum: 0
                   example: 200930
                 testMode:
                   type: boolean
@@ -214,31 +206,25 @@ paths:
                       clientRequestId:
                         type: string
                         description: Client's unique identifier for this draw request
-                        pattern: '^[A-Za-z0-9 -]+'
                         example: RQID-31234545-32
                       drawText:
                         type: string
                         description: An extra text string that will appear in the draw reports and is also appended to the draw report file names
                         example: PROMO-1
-                        pattern: '^[a-zA-Z0-9 -_]+'
                       drawHash:
                         type: string
                         description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets'
-                        pattern: '^[a-fA-F0-9]+'
                         format: binary
                       drawNumber:
                         type: integer
                         description: Number to assign to this draw. Shown in draw reports and file names
-                        minimum: 0
                         example: 364
                       productId:
                         type: integer
                         description: 'Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
-                        minimum: 0
                       numberOfSets:
                         type: integer
                         description: How many sets of numbers to draw
-                        minimum: 1
                       drawMatrix:
                         $ref: '#/components/schemas/DrawMatrix'
                       distribution:
@@ -304,7 +290,6 @@ paths:
                   clientTransactionId:
                     type: string
                     description: Client's unique ID for this transaction
-                    pattern: '^[A-Za-z0-9 -]+'
                   transactionStatus:
                     $ref: '#/components/schemas/Status'
                   serverId:
@@ -318,7 +303,6 @@ paths:
                   rngBusinessDay:
                     type: integer
                     description: Business day under which the transaction was recorded. Format is YYMMDD.
-                    minimum: 0
                     example: 200930
                   drawResults:
                     type: array
@@ -329,14 +313,12 @@ paths:
                         clientRequestId:
                           type: string
                           description: Client's unique identifier for this draw request
-                          pattern: '^[A-Za-z0-9 -]+'
                           example: RQID-31234545-32
                         drawStatus:
                           $ref: '#/components/schemas/Status'
                         productId:
                           type: integer
                           description: Identifier of the product definition drawn
-                          minimum: 0
                         drawTime:
                           type: string
                           format: date-time
@@ -353,7 +335,6 @@ paths:
                             type: array
                             items:
                               type: integer
-                              minimum: 0
                       required:
                         - drawStatus
                 required:
@@ -453,11 +434,9 @@ paths:
                   description: Client's unique ID for this transaction
                   format: int64
                   example: TXID-102030450-11
-                  pattern: '^[A-Za-z0-9 -]+'
                 clientBusinessDay:
                   type: integer
                   description: Client's current business day. Format is YYMMDD.
-                  minimum: 0
                   example: 200930
                 drawRequests:
                   type: array
@@ -468,16 +447,13 @@ paths:
                       clientRequestId:
                         type: string
                         description: Client's unique identifier for this draw request
-                        pattern: '^[A-Za-z0-9 -]+'
                         example: RQID-31234545-32
                       productId:
                         type: integer
                         description: 'Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
-                        minimum: 0
                       numberOfSets:
                         type: integer
                         description: How many sets of numbers to draw
-                        minimum: 1
                       drawMatrix:
                         $ref: '#/components/schemas/DrawMatrix'
                       distribution:
@@ -540,17 +516,14 @@ components:
         setSize:
           type: integer
           description: How many numbers in each set
-          minimum: 1
           example: 6
         minValue:
           type: integer
           description: Lowest number that can be drawn
-          minimum: 0
           example: 1
         maxValue:
           type: integer
           description: Highest number that can be drawn
-          minimum: 0
           example: 49
         withReplacement:
           type: boolean
@@ -561,7 +534,6 @@ components:
           uniqueItems: true
           items:
             type: integer
-            minimum: 0
             example: 0
     Distribution:
       title: Distribution
@@ -573,7 +545,6 @@ components:
           description: Initial distribution values
           items:
             type: integer
-            minimum: 0
         depletionType:
           type: string
           enum:
