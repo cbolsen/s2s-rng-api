@@ -409,6 +409,20 @@ paths:
                             - 17
                             - 22
                             - 34
+                      - clientRequestId: RQID-31234546-23
+                        drawStatus:
+                          code: 0
+                          description: Success
+                        productId: 1006
+                        drawTime: '2020-09-30T18:30:23Z'
+                        recordId: EX191109870000000254
+                        sets:
+                          - - 4
+                            - 10
+                            - 19
+                            - 24
+                            - 35
+                            - 46
         '400':
           description: Bad Request
           headers: {}
@@ -496,9 +510,9 @@ paths:
                       productId: 1006
                       numberOfSets: 1
                       drawMatrix:
-                        setSize: 5
+                        setSize: 6
                         minValue: 1
-                        maxValue: 39
+                        maxValue: 49
                         withReplacement: true
         description: ''
       parameters: []
