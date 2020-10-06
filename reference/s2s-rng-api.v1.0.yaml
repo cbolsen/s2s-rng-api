@@ -87,27 +87,27 @@ paths:
               examples:
                 Minimal Example:
                   value:
-                    transaction-status:
+                    transactionStatus:
                       code: 0
                       description: Success
-                    server-id: RNG-TEST-87
-                    server-version: '9.3'
-                    server-time: '2020-09-30T18:30:23Z'
-                    rng-business-day: 200930
-                    test-mode: false
-                    draw-results:
-                      - draw-status:
+                    serverId: RNG-TEST-87
+                    serverVersion: '9.3'
+                    serverTime: '2020-09-30T18:30:23Z'
+                    rngBusinessDay: 200930
+                    testMode: false
+                    drawResults:
+                      - drawStatus:
                           code: 0
                           description: Success
-                        product-id: 1002
-                        number-of-sets: 1
-                        draw-matrix:
-                          set-size: 6
-                          min-value: 1
-                          max-value: 49
-                          with-replacement: true
-                        record-id: EX191109870000000125
-                        record-handle: -1
+                        productId: 1002
+                        numberOfSets: 1
+                        drawMatrix:
+                          setSize: 6
+                          minValue: 1
+                          maxValue: 49
+                          withReplacement: true
+                        recordId: EX191109870000000125
+                        recordHandle: -1
                         sets:
                           - - 9
                             - 16
@@ -117,29 +117,29 @@ paths:
                             - 42
                 Example:
                   value:
-                    client-transaction-id: TXID-102030450-11
-                    transaction-status:
+                    clientTransactionId: TXID-102030450-11
+                    transactionStatus:
                       code: 0
                       description: Success
-                    server-id: RNG-TEST-87
-                    server-version: '9.3'
-                    server-time: '2020-09-30T18:30:23Z'
-                    rng-business-day: 200930
-                    test-mode: true
-                    draw-results:
-                      - client-request-id: RQID-31234545-32
-                        draw-status:
+                    serverId: RNG-TEST-87
+                    serverVersion: '9.3'
+                    serverTime: '2020-09-30T18:30:23Z'
+                    rngBusinessDay: 200930
+                    testMode: true
+                    drawResults:
+                      - clientRequestId: RQID-31234545-32
+                        drawStatus:
                           code: 0
                           description: Success
-                        product-id: 1006
-                        number-of-sets: 2
-                        draw-matrix:
-                          set-size: 5
-                          min-value: 1
-                          max-value: 39
-                          with-replacement: true
-                        record-id: EX191109870000000125
-                        record-handle: 43543
+                        productId: 1006
+                        numberOfSets: 2
+                        drawMatrix:
+                          setSize: 5
+                          minValue: 1
+                          maxValue: 39
+                          withReplacement: true
+                        recordId: EX191109870000000125
+                        recordHandle: 43543
                         sets:
                           - - 10
                             - 21
@@ -190,12 +190,18 @@ paths:
                       clientRequestId:
                         type: string
                         description: Client's unique identifier for this draw request
-                      clientHash:
-                        type: string
-                        description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets'
                       clientString:
                         type: string
                         description: A text string that will be printed in the draw reports and also appended to the draw report file names
+                        example: PROMO-1
+                      drawHash:
+                        type: string
+                        description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets'
+                      drawNumber:
+                        type: integer
+                        description: Number to assign to this draw. Shown in draw reports and file names
+                        minimum: 0
+                        example: 364
                       productId:
                         type: integer
                         description: 'Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
@@ -210,10 +216,6 @@ paths:
                         $ref: '#/components/schemas/Distribution'
                       extractData:
                         $ref: '#/components/schemas/ExtractData'
-                      drawNumber:
-                        type: integer
-                        minimum: 0
-                        example: 364
                     required:
                       - productId
                       - numberOfSets
@@ -237,8 +239,8 @@ paths:
                       loginTime: '2020-09-30T15:56:01Z'
                   drawRequests:
                     - clientRequestId: DRAW-31234545-32
-                      clientHash: 9498A934974997B9723498A93D92498397BC70B
-                      clientString: XTRA-DRAW
+                      clientString: PROMO-1
+                      drawHash: 9498A934974997B9723498A93D92498397BC70B
                       productId: 1006
                       numberOfSets: 2
                       drawMatrix:
