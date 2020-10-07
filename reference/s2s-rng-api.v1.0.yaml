@@ -725,7 +725,7 @@ paths:
       parameters: []
   /server/rng-status:
     get:
-      summary: Your GET endpoint
+      summary: ''
       tags: []
       responses:
         '200':
