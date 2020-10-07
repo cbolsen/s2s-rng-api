@@ -10,7 +10,7 @@ servers:
 paths:
   /draws/file-draws:
     post:
-      summary: ''
+      summary: Draw From File
       operationId: post-draws-file-draws
       responses:
         '200':
@@ -241,7 +241,7 @@ paths:
       parameters: []
   /draws/regular-draws:
     post:
-      summary: ''
+      summary: Regular Draw
       operationId: post-draws-regular-draws
       responses:
         '200':
@@ -508,7 +508,7 @@ paths:
       parameters: []
   /draws/quick-picks:
     post:
-      summary: ''
+      summary: Quick Pick Draw
       operationId: post-draws-quick-picks
       responses:
         '200':
@@ -725,7 +725,7 @@ paths:
       parameters: []
   /server/rng-status:
     get:
-      summary: ''
+      summary: Get RNG Status
       tags: []
       responses:
         '200':
@@ -850,7 +850,7 @@ paths:
     parameters: []
   /draws/instant-wins:
     post:
-      summary: ''
+      summary: Instant Win Draw
       operationId: post-draws-instant-wins
       responses:
         '200':
