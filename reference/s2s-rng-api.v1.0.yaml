@@ -492,6 +492,55 @@ paths:
                         withReplacement: true
         description: ''
       parameters: []
+  /server/rng-status:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serverId:
+                    type: string
+                    example: RNG-TEST-87
+                    description: RNG server identifier
+                  serverVersion:
+                    type: string
+                    example: '9.3'
+                    description: RNG server version number
+                  serverTime:
+                    type: string
+                    format: date-time
+                    example: '2020-09-30T18:30:23Z'
+                    description: Current system time of the RNG server
+                  rngBusinessDay:
+                    type: integer
+                    description: Current business day for this RNG server. Format is YYMMDD.
+                    example: 200930
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        requestCount:
+                          type: string
+                        lastRequestTime:
+                          type: string
+                  cards:
+                    type: string
+      operationId: get-server-status
+      description: Get current status of the RNG server and the configured products
+    parameters: []
 components:
   schemas:
     DrawUsers:
