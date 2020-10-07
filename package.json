@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/cbolsen/s2s-rng-api/issues"
   },
-  "homepage": "https://github.com/cbolsen/s2s-rng-api#readme"
+  "homepage": "https://github.com/cbolsen/s2s-rng-api#readme",
+  "dependencies": {
+    "rapidoc": "^8.2.0"
+  }
 }

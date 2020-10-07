@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: Collapsible Tags
+  version: 1.0.0
+  description: | 
+
+    Tags in openapi are used for grouping and ordering operations.<br/>
+    In RapiDoc's `view` mode these tags acts like an accordions, which you can expand or collapse.
+
+    By default all the tags are expanded, but if you wish to collapse certain tags at the beginning when the spec is loaded,<br/>
+    you may do so by using `x-tag-expanded` extension under `tags` section which can contain `true` or `false`
+
+    below is an example how to achieve it
+
+    ```yaml
+      openapi: 3.0.0
+      info:
+        version: 1.0.0
+        title: Collapsible Tags
+      paths:
+        ...
+        ...
+      tags:
+        - name: My Tag 1
+        - name: My Tag 2
+          x-tag-expanded: false # <-- extension to control expand collapse tags in RapiDoc
+        - name: My Tag 3
+        - name: My Tag 4
+    ```
+    Even if a tag is closed, you can create links to operations inside them.<br/> 
+    Upon clicking the link, it will open the tag if it is closed and navigate to operation's location 
+    
+    _Example: **[Link](#get-/path1-in-closed-tag "Open it")** for `path1-in-closed-tag`_
+
+
+paths:
+  /path1-in-open-tag:
+    get:
+      summary: Path 1 under open tag 
+      tags: 
+        - Open
+      responses:
+        '200':
+          description: Happy response
+  /path2-in-open-tag:
+    get:
+      summary: Path 2 under open tag 
+      tags: 
+        - Open
+      responses:
+        '200':
+          description: Happy response
+          
+  /path1-in-closed-tag:
+    get:
+      summary: Path 1 under closed tag 
+      tags: 
+        - Closed
+      responses:
+        '200':
+          description: Happy response
+  /path2-in-closed-tag:
+    get:
+      summary: Path 2 under closed tag 
+      tags: 
+        - Closed
+      responses:
+        '200':
+          description: Happy response
+          
+  /No-Tags:
+    get:
+      summary: This path dont have any tag associated with it. (It gets created from the path) 
+      responses:
+        '200':
+          description: Happy response
+          
+tags:
+  - name: Open
+    description: This tag is **open** by default, and it contains 2 paths inside it. 
+  - name: Closed
+    description: This tag is **closed** in the begining when the spec loads. It achieved by using `x-tag-expanded` extension 
+    x-tag-expanded: false
