@@ -8,6 +8,237 @@ info:
 servers:
   - url: 'http://localhost:55002/s2s-rng-api/v1.0'
 paths:
+  /draws/file-draws:
+    post:
+      summary: ''
+      operationId: post-draws-file-draws
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientTransactionId:
+                    type: string
+                    description: Client's unique ID for this transaction
+                  transactionStatus:
+                    $ref: '#/components/schemas/Status'
+                  serverId:
+                    type: string
+                    example: RNG-TEST-87
+                    description: RNG server identifier
+                  serverVersion:
+                    type: string
+                    example: '9.3'
+                    description: RNG server version number
+                  serverTime:
+                    type: string
+                    format: date-time
+                    example: '2020-09-30T18:30:23Z'
+                    description: Current system time of the RNG server
+                  rngBusinessDay:
+                    type: integer
+                    description: Business day under which the transaction was recorded. Format is YYMMDD.
+                    example: 200930
+                  testMode:
+                    type: boolean
+                    description: Marks the draw results as "test mode" and not valid for use
+                  drawResults:
+                    type: array
+                    description: 'Array of results objects, corresponding to array of requests'
+                    items:
+                      type: object
+                      properties:
+                        clientRequestId:
+                          type: string
+                          description: Client's unique identifier for this draw request
+                          example: RQID-31234545-32
+                        drawStatus:
+                          $ref: '#/components/schemas/Status'
+                        productId:
+                          type: integer
+                          description: Identifier of the product definition drawn
+                        drawMatrix:
+                          $ref: '#/components/schemas/DrawMatrix'
+                        distribution:
+                          $ref: '#/components/schemas/Distribution'
+                        drawTime:
+                          type: string
+                          format: date-time
+                          description: Timestamp of the draw
+                          example: '2020-09-30T18:30:23Z'
+                        recordId:
+                          type: string
+                          description: Unique record identifier for the draw
+                          example: EX191109870000000125
+                        recordHandle:
+                          type: integer
+                          description: Handle that can optionally be used for faster verification processing
+                          format: int64
+                        sets:
+                          type: array
+                          description: Numbers drawn
+                          items:
+                            type: array
+                            items:
+                              type: integer
+                      required:
+                        - drawStatus
+              examples:
+                Example:
+                  value:
+                    clientTransactionId: TXID-102030450-11
+                    transactionStatus:
+                      code: 0
+                      description: Success
+                    serverId: RNG-TEST-87
+                    serverVersion: '9.3'
+                    serverTime: '2020-09-30T18:30:23Z'
+                    rngBusinessDay: 200930
+                    testMode: true
+                    drawResults:
+                      - clientRequestId: RQID-31234545-32
+                        drawStatus:
+                          code: 0
+                          description: Success
+                        productId: 1006
+                        numberOfSets: 2
+                        drawMatrix:
+                          setSize: 5
+                          minValue: 1
+                          maxValue: 39
+                          withReplacement: true
+                        drawTime: '2020-09-30T18:30:23Z'
+                        recordId: EX191109870000000125
+                        recordHandle: 43543
+                        sets:
+                          - - 10
+                            - 21
+                            - 29
+                            - 35
+                            - 39
+                          - - 3
+                            - 8
+                            - 17
+                            - 22
+                            - 34
+        '400':
+          description: Bad Request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Example:
+                  value:
+                    status:
+                      code: 999
+                      description: Input validation failed
+                    fieldErrors:
+                      - code: INVALID_VALUE
+                        message: Product not found
+                        fieldName: productId
+                        path: 'drawRequests[1].productId'
+      description: Create draws for products which draw from files
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientTransactionId:
+                  type: string
+                  description: Client's unique ID for this transaction
+                  format: int64
+                  example: TXID-102030450-11
+                clientBusinessDay:
+                  type: integer
+                  description: Client's current business day. Format is YYMMDD.
+                  example: 200930
+                testMode:
+                  type: boolean
+                  description: Marks the draw results as "test mode" and not valid for use
+                drawUsers:
+                  type: array
+                  description: Draw personnel names and login times to be included in the draw reports
+                  items:
+                    $ref: '#/components/schemas/DrawUsers'
+                drawRequests:
+                  type: array
+                  description: One or more draw requests to be processed
+                  items:
+                    type: object
+                    properties:
+                      clientRequestId:
+                        type: string
+                        description: Client's unique identifier for this draw request
+                        example: RQID-31234545-32
+                      fileName:
+                        type: string
+                        description: An extra text string that will appear in the draw reports and is also appended to the draw report file names
+                        example: PROMO-1
+                      fileHash:
+                        type: string
+                        description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets'
+                        format: binary
+                      drawNumber:
+                        type: integer
+                        description: Number to assign to this draw. Shown in draw reports and file names
+                        example: 364
+                      productId:
+                        type: integer
+                        description: 'Identifier of the product to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
+                      numberOfSets:
+                        type: integer
+                        description: How many sets of numbers to draw
+                      drawMatrix:
+                        $ref: '#/components/schemas/DrawMatrix'
+                      distribution:
+                        $ref: '#/components/schemas/Distribution'
+                      extractData:
+                        $ref: '#/components/schemas/ExtractData'
+                    required:
+                      - productId
+                      - numberOfSets
+              required:
+                - drawRequests
+            examples:
+              Example:
+                value:
+                  clientTransactionId: TXID-102030450-11
+                  clientBusinessDay: 200930
+                  testMode: true
+                  drawUsers:
+                    - name: Jane Doe
+                      loginTime: '2020-09-30T15:47:44Z'
+                    - name: John Smith
+                      loginTime: '2020-09-30T15:56:01Z'
+                  drawRequests:
+                    - clientRequestId: RQID-31234545-32
+                      fileName: Draw_Input_409_5_MillionaireRaffle_week4_additional.CSV
+                      fileHash: 9498A934974997B9723498A93D92498397BC70B
+                      productId: 1006
+                      numberOfSets: 2
+                      drawMatrix:
+                        setSize: 5
+                        minValue: 1
+                        maxValue: 39
+                        withReplacement: true
+                      extractData:
+                        extractType: TYPE1
+                        extractFields:
+                          - '1234'
+                          - ''
+                          - '23485'
+                          - ''
+                          - ''
+                          - 'true'
+                          - '30.00'
+        description: ''
+      parameters: []
   /draws/regular-draws:
     post:
       summary: ''
@@ -221,7 +452,7 @@ paths:
                         example: 364
                       productId:
                         type: integer
-                        description: 'Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
+                        description: 'Identifier of the product to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
                       numberOfSets:
                         type: integer
                         description: How many sets of numbers to draw
@@ -450,7 +681,7 @@ paths:
                         example: RQID-31234545-32
                       productId:
                         type: integer
-                        description: 'Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
+                        description: 'Identifier of the product to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
                       numberOfSets:
                         type: integer
                         description: How many sets of numbers to draw
@@ -517,30 +748,332 @@ paths:
                     format: date-time
                     example: '2020-09-30T18:30:23Z'
                     description: Current system time of the RNG server
-                  rngBusinessDay:
+                  businessDay:
                     type: integer
                     description: Current business day for this RNG server. Format is YYMMDD.
                     example: 200930
                   products:
                     type: array
+                    description: Configured products and status
                     items:
                       type: object
                       properties:
                         id:
                           type: integer
+                          description: Product identifier
                         name:
                           type: string
+                          description: Product name
                         type:
                           type: string
+                          enum:
+                            - Integer
+                            - Table
+                            - Lotto
+                          example: Integer
+                          description: The configured RNG algorithm type for the product
                         requestCount:
-                          type: string
+                          type: integer
+                          description: Current total number of draw requests for this product
                         lastRequestTime:
                           type: string
+                          description: The time of the last draw request for this product
+                          format: date-time
                   cards:
-                    type: string
+                    type: array
+                    description: Status of the configured Lynks HSM cards
+                    items:
+                      type: object
+                      properties:
+                        slot:
+                          type: integer
+                          description: Slot number of the HSM card
+                        active:
+                          type: boolean
+                          description: Indicates the currently active HSM card
+                        status:
+                          type: string
+                          description: Current status description for this card
+                        serial:
+                          type: string
+                          description: Serial number of the HSM
+                          example: 01000000F00019C8
+                        sequencer:
+                          type: integer
+                          description: Current value of the HSM card's sequencer
+                        lastError:
+                          description: 'The error code of the most recent card error, if any'
+                          type: integer
+                        lastErrorTime:
+                          type: string
+                          description: 'The time of the last error code, if any'
+                          format: date-time
+                        publicKey:
+                          type: string
+                          description: Hexadecimal representation of the current 140-byte public key
+                          format: binary
+              examples:
+                Example 1:
+                  value:
+                    serverId: RNG-TEST-87
+                    serverVersion: '9.3'
+                    serverTime: '2020-09-30T18:30:23Z'
+                    businessDay: 200930
+                    products:
+                      - id: 1001
+                        name: Cool3
+                        type: Integer
+                        requestCount: 1
+                        lastRequestTime: '2019-08-24T14:15:22Z'
+                      - id: 1002
+                        name: Lotto6
+                        type: Integer
+                        requestCount: 1
+                        lastRequestTime: '2019-08-24T14:15:22Z'
+                    cards:
+                      - slot: 0
+                        active: true
+                        status: OK
+                        serial: 01000000F00019C8
+                        sequencer: 18394549
+                        lastError: 5
+                        lastErrorTime: '2019-08-24T14:15:22Z'
+                        publicKey: 308C13456BE5...
+                      - slot: 1
+                        active: false
+                        status: OK
+                        serial: 01000000F00019C5
+                        sequencer: 39459
+                        publicKey: 308C13283940...
       operationId: get-server-status
       description: Get current status of the RNG server and the configured products
     parameters: []
+  /draws/instant-wins:
+    post:
+      summary: ''
+      operationId: post-draws-instant-wins
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientTransactionId:
+                    type: string
+                    description: Client's unique ID for this transaction
+                  transactionStatus:
+                    $ref: '#/components/schemas/Status'
+                  serverId:
+                    type: string
+                    example: RNG-TEST-87
+                    description: RNG server identifier
+                  serverVersion:
+                    type: string
+                    example: '9.3'
+                    description: RNG server version number
+                  serverTime:
+                    type: string
+                    format: date-time
+                    example: '2020-09-30T18:30:23Z'
+                    description: Current system time of the RNG server
+                  rngBusinessDay:
+                    type: integer
+                    description: Business day under which the transaction was recorded. Format is YYMMDD.
+                    example: 200930
+                  testMode:
+                    type: boolean
+                    description: Marks the draw results as "test mode" and not valid for use
+                  drawResults:
+                    type: array
+                    description: 'Array of results objects, corresponding to array of requests'
+                    items:
+                      type: object
+                      properties:
+                        clientRequestId:
+                          type: string
+                          description: Client's unique identifier for this draw request
+                          example: RQID-31234545-32
+                        drawStatus:
+                          $ref: '#/components/schemas/Status'
+                        playerId:
+                          type: string
+                          description: Player or generating device identifier
+                        price:
+                          type: integer
+                          description: Transction price in pennies
+                        productId:
+                          type: integer
+                          description: Identifier of the product definition drawn
+                        drawMatrix:
+                          $ref: '#/components/schemas/DrawMatrix'
+                        distribution:
+                          $ref: '#/components/schemas/Distribution'
+                        drawTime:
+                          type: string
+                          format: date-time
+                          description: Timestamp of the draw
+                          example: '2020-09-30T18:30:23Z'
+                        recordId:
+                          type: string
+                          description: Unique record identifier for the draw
+                          example: EX191109870000000125
+                        recordHandle:
+                          type: integer
+                          description: Handle that can optionally be used for faster verification processing
+                          format: int64
+                        sets:
+                          type: array
+                          description: Numbers drawn
+                          items:
+                            type: array
+                            items:
+                              type: integer
+                      required:
+                        - drawStatus
+              examples:
+                Example:
+                  value:
+                    clientTransactionId: TXID-102030450-11
+                    transactionStatus:
+                      code: 0
+                      description: Success
+                    serverId: RNG-TEST-87
+                    serverVersion: '9.3'
+                    serverTime: '2020-09-30T18:30:23Z'
+                    rngBusinessDay: 200930
+                    testMode: true
+                    drawResults:
+                      - clientRequestId: RQID-31234545-32
+                        drawStatus:
+                          code: 0
+                          description: Success
+                        productId: 1006
+                        numberOfSets: 2
+                        drawMatrix:
+                          setSize: 5
+                          minValue: 1
+                          maxValue: 39
+                          withReplacement: true
+                        drawTime: '2020-09-30T18:30:23Z'
+                        recordId: EX191109870000000125
+                        recordHandle: 43543
+                        sets:
+                          - - 10
+                            - 21
+                            - 29
+                            - 35
+                            - 39
+                          - - 3
+                            - 8
+                            - 17
+                            - 22
+                            - 34
+        '400':
+          description: Bad Request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Example:
+                  value:
+                    status:
+                      code: 999
+                      description: Input validation failed
+                    fieldErrors:
+                      - code: INVALID_VALUE
+                        message: Product not found
+                        fieldName: productId
+                        path: 'drawRequests[1].productId'
+      description: Create draws for instant win draw products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientTransactionId:
+                  type: string
+                  description: Client's unique ID for this transaction
+                  format: int64
+                  example: TXID-102030450-11
+                clientBusinessDay:
+                  type: integer
+                  description: Client's current business day. Format is YYMMDD.
+                  example: 200930
+                testMode:
+                  type: boolean
+                  description: Marks the draw results as "test mode" and not valid for use
+                drawRequests:
+                  type: array
+                  description: One or more draw requests to be processed
+                  items:
+                    type: object
+                    properties:
+                      clientRequestId:
+                        type: string
+                        description: Client's unique identifier for this draw request
+                        example: RQID-31234545-32
+                      playerId:
+                        type: string
+                        description: Player or generating device identifier
+                      price:
+                        type: integer
+                        description: Transction price in pennies
+                      productId:
+                        type: integer
+                        description: 'Identifier of the product to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below.'
+                      numberOfSets:
+                        type: integer
+                        description: How many sets of numbers to draw
+                      drawMatrix:
+                        $ref: '#/components/schemas/DrawMatrix'
+                      distribution:
+                        $ref: '#/components/schemas/Distribution'
+                      extractData:
+                        $ref: '#/components/schemas/ExtractData'
+                    required:
+                      - productId
+                      - numberOfSets
+              required:
+                - drawRequests
+            examples:
+              Example:
+                value:
+                  clientTransactionId: TXID-102030450-11
+                  clientBusinessDay: 200930
+                  testMode: true
+                  drawUsers:
+                    - name: Jane Doe
+                      loginTime: '2020-09-30T15:47:44Z'
+                    - name: John Smith
+                      loginTime: '2020-09-30T15:56:01Z'
+                  drawRequests:
+                    - clientRequestId: RQID-31234545-32
+                      drawText: PROMO-1
+                      drawHash: 9498A934974997B9723498A93D92498397BC70B
+                      productId: 1006
+                      numberOfSets: 2
+                      drawMatrix:
+                        setSize: 5
+                        minValue: 1
+                        maxValue: 39
+                        withReplacement: true
+                      extractData:
+                        extractType: TYPE1
+                        extractFields:
+                          - '1234'
+                          - ''
+                          - '23485'
+                          - ''
+                          - ''
+                          - 'true'
+                          - '30.00'
+        description: ''
+      parameters: []
 components:
   schemas:
     DrawUsers:
