@@ -926,7 +926,7 @@ components:
     ErrorResponse:
       description: Describes the error and any specific problems with fields in the request.
       allOf:
-        - $ref: '#/components/schemas/SecurityRequest'
+        - $ref: '#/components/schemas/Status'
         - type: object
           properties:
             fieldErrors:
@@ -935,9 +935,8 @@ components:
                 $ref: '#/components/schemas/FieldError'
       x-examples:
         example-1:
-          status:
-            code: 999
-            description: Input validation failed
+          code: 999
+          description: Input validation failed
           fieldErrors:
             - code: INVALID_VALUE
               message: Product not found
@@ -976,19 +975,6 @@ components:
               description: Base 64 encoded content of the security block
           required:
             - blockType
-    Test:
-      description: 'asddfsdf'
-      allOf:
-        - $ref: '#/components/schemas/SecurityRequest'
-        - type: object
-          description: obj desc
-          properties:
-            test1:
-              type: string
-              description: test1
-            test2:
-              type: string
-              description: test2
   responses:
     400-Bad-Request:
       description: Bad Request
