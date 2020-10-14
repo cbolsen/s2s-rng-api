@@ -302,110 +302,6 @@ components:
                     fieldName: productId
                     path: 'drawRequests[1].productId'
 paths:
-  /draws:
-    post:
-      summary: Random Number Draw
-      operationId: post-draws
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/BatchResponse'
-                  - type: object
-                    properties:
-                      testMode:
-                        $ref: '#/components/schemas/TestMode'
-                      drawResults:
-                        type: array
-                        description: 'Array of results objects, corresponding to the array of requests'
-                        items:
-                          allOf:
-                            - $ref: '#/components/schemas/DrawResult'
-                            - type: object
-                              properties:
-                                drawNumber:
-                                  type: integer
-                                drawMatrix:
-                                  $ref: '#/components/schemas/DrawMatrix'
-                              required:
-                                - drawStatus
-                      securityBlocks:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/SecurityBlock'
-              examples:
-                Example:
-                  value:
-                    clientTransactionId: TXID-102030450-11
-                    transactionStatus:
-                      code: 0
-                      description: Success
-                    serverId: RNG-TEST-87
-                    serverVersion: '9.3'
-                    serverTime: '2020-09-30T18:30:23Z'
-                    rngBusinessDay: 200930
-                    testMode: true
-                    drawResults:
-                      - clientDrawId: RQID-31234545-32
-                        drawStatus:
-                          code: 0
-                          description: Success
-                        productId: 1006
-                        drawMatrix:
-                          numberOfSets: 2
-                          setSize: 5
-                          minValue: 1
-                          maxValue: 39
-                          withReplacement: true
-                        drawTime: '2020-09-30T18:30:23Z'
-                        recordId: EX191109870000000125
-                        recordHandle: 43543
-                        sets:
-                          - - 10
-                            - 21
-                            - 29
-                            - 35
-                            - 39
-                          - - 3
-                            - 8
-                            - 17
-                            - 22
-                            - 34
-        '400':
-            $ref: '#/components/responses/BadRequestResponse'
-      description: Conduct random number draws
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/BatchRequest'
-                - type: object
-                  properties:
-                    includeDrawMatrix:
-                      $ref: '#/components/schemas/IncludeDrawMatrix'
-                    testMode:
-                      $ref: '#/components/schemas/TestMode'
-                    drawUsers:
-                      $ref: '#/components/schemas/DrawUsers'
-                    drawRequests:
-                      description: One or more draw requests to be processed
-                      type: array
-                      items:
-                        allOf:
-                          - $ref: '#/components/schemas/DrawRequest'
-                    securityRequests:
-                      $ref: '#/components/schemas/SecurityRequests'
-                  required:
-                    - drawRequests
-            examples: {}
-      parameters: []
-      tags:
-        - rng
   /draws/quick-picks:
     post:
       summary: Quick Pick Draw
@@ -429,7 +325,7 @@ paths:
                             - $ref: '#/components/schemas/DrawResult'
               examples: {}
         '400':
-            $ref: '#/components/responses/BadRequestResponse'
+          $ref: '#/components/responses/BadRequestResponse'
       requestBody:
         description: ''
         content:
@@ -488,7 +384,7 @@ paths:
                           $ref: '#/components/schemas/SecurityBlock'
               examples: {}
         '400':
-            $ref: '#/components/responses/BadRequestResponse'
+          $ref: '#/components/responses/BadRequestResponse'
       requestBody:
         content:
           application/json:
@@ -564,7 +460,7 @@ paths:
                           $ref: '#/components/schemas/SecurityBlock'
               examples: {}
         '400':
-            $ref: '#/components/responses/BadRequestResponse'
+          $ref: '#/components/responses/BadRequestResponse'
       requestBody:
         content:
           application/json:
@@ -587,14 +483,14 @@ paths:
                           - $ref: '#/components/schemas/DrawRequest'
                           - type: object
                             properties:
-                              drawText:
-                                type: string
-                                description: An extra text string that will appear in the draw reports and is also appended to the draw report file names
-                                example: PROMO-1
                               drawHash:
                                 type: string
                                 description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets'
                                 format: binary
+                              drawText:
+                                type: string
+                                description: An extra text string that will appear in the draw reports and is also appended to the draw report file names
+                                example: PROMO-1
                     securityRequests:
                       $ref: '#/components/schemas/SecurityRequests'
                   required:
