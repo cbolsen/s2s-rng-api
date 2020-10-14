@@ -1,4 +1,4 @@
--openapi: 3.0.0
+openapi: 3.0.0
 info:
   title: S2S RNG API
   version: 1.0.0
@@ -182,8 +182,8 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/SecurityBlock'
-    BaseBatchRequest:
-      title: BaseBatchRequest
+    BatchRequest:
+      title: BatchRequest
       type: object
       properties:
         clientTransactionId:
@@ -198,8 +198,8 @@ components:
         includeDrawMatrix:
           type: boolean
           description: Include RNG parameter matrix in draw results
-    BaseDrawRequest:
-      title: BaseDrawRequest
+    DrawRequest:
+      title: DrawRequest
       type: object
       properties:
         clientDrawId:
@@ -215,8 +215,8 @@ components:
           $ref: '#/components/schemas/UserData'
       required:
         - productId
-    BaseBatchResponse:
-      title: BaseBatchResponse
+    BatchResponse:
+      title: BatchResponse
       type: object
       properties:
         clientTransactionId:
@@ -241,8 +241,8 @@ components:
           type: integer
           description: Business day under which the transaction was recorded. Format is YYMMDD.
           example: 200930
-    BaseDrawResult:
-      title: BaseDrawResult
+    DrawResult:
+      title: DrawResult
       type: object
       properties:
         clientDrawId:
@@ -436,7 +436,7 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/BaseBatchRequest'
+                - $ref: '#/components/schemas/BatchRequest'
                 - type: object
                   properties:
                     drawRequests:
@@ -444,11 +444,7 @@ paths:
                       type: array
                       items:
                         allOf:
-                          - $ref: '#/components/schemas/BaseDrawRequest'
-                          - type: object
-                            properties:
-                              Test:
-                                type: string
+                          - $ref: '#/components/schemas/DrawRequest'
                     securityRequests:
                       $ref: '#/components/schemas/SecurityRequests'
                   required:
