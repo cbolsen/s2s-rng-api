@@ -1,0 +1,915 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "S2S RNG API",
+    "description" : "Szrek2Solutions Random Number Generator API",
+    "contact" : {
+      "url" : "http://www.szrek.com"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:55002/s2s-rng-api/v1.0"
+  } ],
+  "paths" : {
+    "/draws/regular-draws" : {
+      "post" : {
+        "description" : "Create draws for regular draw products",
+        "operationId" : "post-draws-regular-draws",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/body"
+              },
+              "examples" : {
+                "Minimal Example" : {
+                  "value" : {
+                    "drawRequests" : [ {
+                      "productId" : 1002,
+                      "numberOfSets" : 1
+                    } ]
+                  }
+                },
+                "Example" : {
+                  "value" : {
+                    "clientTransactionId" : "TXID-102030450-11",
+                    "clientBusinessDay" : 200930,
+                    "testMode" : true,
+                    "drawUsers" : [ {
+                      "name" : "Jane Doe",
+                      "loginTime" : "2020-09-30T15:47:44Z"
+                    }, {
+                      "name" : "John Smith",
+                      "loginTime" : "2020-09-30T15:56:01Z"
+                    } ],
+                    "drawRequests" : [ {
+                      "clientRequestId" : "RQID-31234545-32",
+                      "drawText" : "PROMO-1",
+                      "drawHash" : "9498A934974997B9723498A93D92498397BC70B",
+                      "productId" : 1006,
+                      "numberOfSets" : 2,
+                      "drawMatrix" : {
+                        "setSize" : 5,
+                        "minValue" : 1,
+                        "maxValue" : 39,
+                        "withReplacement" : true
+                      },
+                      "extractData" : {
+                        "extractType" : "TYPE1",
+                        "extractFields" : [ "1234", "", "23485", "", "", "true", "30.00" ]
+                      }
+                    } ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200"
+                },
+                "examples" : {
+                  "Minimal Example" : {
+                    "value" : {
+                      "transactionStatus" : {
+                        "code" : 0,
+                        "description" : "Success"
+                      },
+                      "serverId" : "RNG-TEST-87",
+                      "serverVersion" : "9.3",
+                      "serverTime" : "2020-09-30T18:30:23Z",
+                      "rngBusinessDay" : 200930,
+                      "testMode" : false,
+                      "drawResults" : [ {
+                        "drawStatus" : {
+                          "code" : 0,
+                          "description" : "Success"
+                        },
+                        "productId" : 1002,
+                        "numberOfSets" : 1,
+                        "drawMatrix" : {
+                          "setSize" : 6,
+                          "minValue" : 1,
+                          "maxValue" : 49,
+                          "withReplacement" : true
+                        },
+                        "drawTime" : "2020-09-30T18:30:23Z",
+                        "recordId" : "EX191109870000000125",
+                        "recordHandle" : -1,
+                        "sets" : [ [ 9, 16, 26, 29, 37, 42 ] ]
+                      } ]
+                    }
+                  },
+                  "Example" : {
+                    "value" : {
+                      "clientTransactionId" : "TXID-102030450-11",
+                      "transactionStatus" : {
+                        "code" : 0,
+                        "description" : "Success"
+                      },
+                      "serverId" : "RNG-TEST-87",
+                      "serverVersion" : "9.3",
+                      "serverTime" : "2020-09-30T18:30:23Z",
+                      "rngBusinessDay" : 200930,
+                      "testMode" : true,
+                      "drawResults" : [ {
+                        "clientRequestId" : "RQID-31234545-32",
+                        "drawStatus" : {
+                          "code" : 0,
+                          "description" : "Success"
+                        },
+                        "productId" : 1006,
+                        "numberOfSets" : 2,
+                        "drawMatrix" : {
+                          "setSize" : 5,
+                          "minValue" : 1,
+                          "maxValue" : 39,
+                          "withReplacement" : true
+                        },
+                        "drawTime" : "2020-09-30T18:30:23Z",
+                        "recordId" : "EX191109870000000125",
+                        "recordHandle" : 43543,
+                        "sets" : [ [ 10, 21, 29, 35, 39 ], [ 3, 8, 17, 22, 34 ] ]
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                },
+                "examples" : {
+                  "Example" : {
+                    "value" : {
+                      "status" : {
+                        "code" : 999,
+                        "description" : "Input validation failed"
+                      },
+                      "fieldErrors" : [ {
+                        "code" : "INVALID_VALUE",
+                        "message" : "Product not found",
+                        "fieldName" : "productId",
+                        "path" : "drawRequests[1].productId"
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/draws/quick-picks" : {
+      "post" : {
+        "description" : "Create draws for quick pick products",
+        "operationId" : "post-draws-quick-picks",
+        "parameters" : [ ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/body_1"
+              },
+              "examples" : {
+                "Minimal Example" : {
+                  "value" : {
+                    "drawRequests" : [ {
+                      "productId" : 1002,
+                      "numberOfSets" : 1
+                    } ]
+                  }
+                },
+                "Example" : {
+                  "value" : {
+                    "clientTransactionId" : "TXID-102030450-11",
+                    "clientBusinessDay" : 200930,
+                    "drawRequests" : [ {
+                      "clientRequestId" : "RQID-31234545-32",
+                      "productId" : 1002,
+                      "numberOfSets" : 2,
+                      "drawMatrix" : {
+                        "setSize" : 5,
+                        "minValue" : 1,
+                        "maxValue" : 39,
+                        "withReplacement" : true
+                      }
+                    }, {
+                      "clientRequestId" : "RQID-31234546-23",
+                      "productId" : 1006,
+                      "numberOfSets" : 1,
+                      "drawMatrix" : {
+                        "setSize" : 6,
+                        "minValue" : 1,
+                        "maxValue" : 49,
+                        "withReplacement" : true
+                      }
+                    } ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200_1"
+                },
+                "examples" : {
+                  "Minimal Example" : {
+                    "value" : {
+                      "transactionStatus" : {
+                        "code" : 0,
+                        "description" : "Success"
+                      },
+                      "serverId" : "RNG-TEST-87",
+                      "serverVersion" : "9.3",
+                      "rngBusinessDay" : 200930,
+                      "drawResults" : [ {
+                        "drawStatus" : {
+                          "code" : 0,
+                          "description" : "Success"
+                        },
+                        "productId" : 1002,
+                        "drawTime" : "2020-09-30T18:30:23Z",
+                        "recordId" : "EX191109870000000125",
+                        "sets" : [ [ 9, 16, 26, 29, 37, 42 ] ]
+                      } ]
+                    }
+                  },
+                  "Example" : {
+                    "value" : {
+                      "clientTransactionId" : "TXID-102030450-11",
+                      "transactionStatus" : {
+                        "code" : 0,
+                        "description" : "Success"
+                      },
+                      "serverId" : "RNG-TEST-87",
+                      "serverVersion" : "9.3",
+                      "rngBusinessDay" : 200930,
+                      "drawResults" : [ {
+                        "clientRequestId" : "RQID-31234545-32",
+                        "drawStatus" : {
+                          "code" : 0,
+                          "description" : "Success"
+                        },
+                        "productId" : 1006,
+                        "drawTime" : "2020-09-30T18:30:23Z",
+                        "recordId" : "EX191109870000000125",
+                        "sets" : [ [ 10, 21, 29, 35, 39 ], [ 3, 8, 17, 22, 34 ] ]
+                      }, {
+                        "clientRequestId" : "RQID-31234546-23",
+                        "drawStatus" : {
+                          "code" : 0,
+                          "description" : "Success"
+                        },
+                        "productId" : 1006,
+                        "drawTime" : "2020-09-30T18:30:23Z",
+                        "recordId" : "EX191109870000000254",
+                        "sets" : [ [ 4, 10, 19, 24, 35, 46 ] ]
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                },
+                "examples" : {
+                  "Example" : {
+                    "value" : {
+                      "status" : {
+                        "code" : 999,
+                        "description" : "Input validation failed"
+                      },
+                      "fieldErrors" : [ {
+                        "code" : "INVALID_VALUE",
+                        "message" : "Product not found",
+                        "fieldName" : "productId",
+                        "path" : "drawRequests[1].productId"
+                      } ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "DrawUsers" : {
+        "title" : "DrawUsers",
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "description" : "Full name of the user as it should appear in the draw reports",
+            "example" : "John Smith"
+          },
+          "loginTime" : {
+            "type" : "string",
+            "description" : "If included, the login time for the user will appear in the draw reports",
+            "format" : "date-time",
+            "example" : "2020-03-15T15:47:44Z"
+          }
+        },
+        "description" : "Draw personnel to be included in the draw reports. The first user is the Draw Manager, second user is the Draw Auditor, and third is the Draw Observer."
+      },
+      "DrawMatrix" : {
+        "title" : "DrawMatrix",
+        "type" : "object",
+        "properties" : {
+          "setSize" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "description" : "How many numbers in each set",
+            "example" : 6
+          },
+          "minValue" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Lowest number that can be drawn",
+            "example" : 1
+          },
+          "maxValue" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Highest number that can be drawn",
+            "example" : 49
+          },
+          "withReplacement" : {
+            "type" : "boolean",
+            "description" : "Specifies whether drawn numbers are replaced within a set"
+          },
+          "exclusions" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "description" : "Values to be excluded from the draw",
+            "items" : {
+              "minimum" : 0,
+              "type" : "integer",
+              "example" : 0
+            }
+          }
+        },
+        "description" : "The RNG draw parameter matrix. The product definition may or may not allow overriding of these values",
+        "example" : {
+          "minValue" : 1,
+          "setSize" : 6,
+          "withReplacement" : true,
+          "maxValue" : 49,
+          "exclusions" : [ 0, 0 ]
+        }
+      },
+      "Distribution" : {
+        "title" : "Distribution",
+        "type" : "object",
+        "properties" : {
+          "values" : {
+            "type" : "array",
+            "description" : "Initial distribution values",
+            "items" : {
+              "minimum" : 0,
+              "type" : "integer"
+            }
+          },
+          "depletionType" : {
+            "type" : "string",
+            "description" : "Specifies method of depletion for the distribution values",
+            "example" : "NoDepletion",
+            "enum" : [ "NoDepletion", "DecreaseEntry", "RemoveEntry" ]
+          }
+        },
+        "description" : "Initial distribution values and depletion type used for distribution-type products",
+        "example" : {
+          "depletionType" : "NoDepletion",
+          "values" : [ 0, 0 ]
+        }
+      },
+      "ExtractData" : {
+        "title" : "ExtractData",
+        "type" : "object",
+        "properties" : {
+          "extractType" : {
+            "type" : "string",
+            "description" : "Used to define the CSV extract report options"
+          },
+          "extractFields" : {
+            "type" : "array",
+            "description" : "Positional data values that can be included in the CSV extract files. Field positions must be the same for all draws using the same extract type",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "Optional data passed through to the audit process and optionally included in CSV extract files it creates"
+      },
+      "Status" : {
+        "title" : "Status",
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "Numeric error or status code"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "Short description of the error or status code"
+          }
+        },
+        "description" : "Status code and description",
+        "example" : {
+          "code" : 0,
+          "description" : "description"
+        }
+      },
+      "FieldError" : {
+        "title" : "FieldError",
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "description" : "Error code name"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Additional detail about the error code"
+          },
+          "fieldName" : {
+            "type" : "string",
+            "description" : "Name of the field that caused the error, if applicable"
+          },
+          "path" : {
+            "type" : "string",
+            "description" : "Path to the field that caused the error, if applicable"
+          }
+        },
+        "description" : "Details about a specific field error"
+      },
+      "Error" : {
+        "title" : "Error",
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "fieldErrors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FieldError"
+            }
+          }
+        }
+      },
+      "drawsregulardraws_drawRequests" : {
+        "required" : [ "numberOfSets", "productId" ],
+        "type" : "object",
+        "properties" : {
+          "clientRequestId" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique identifier for this draw request",
+            "example" : "RQID-31234545-32"
+          },
+          "drawText" : {
+            "pattern" : "^[a-zA-Z0-9 -_]+",
+            "type" : "string",
+            "description" : "An extra text string that will appear in the draw reports and is also appended to the draw report file names",
+            "example" : "PROMO-1"
+          },
+          "drawHash" : {
+            "pattern" : "^[a-fA-F0-9]+",
+            "type" : "string",
+            "description" : "A hash string that will be included in the signed data, such as the SHA-1 hash of the bets",
+            "format" : "binary"
+          },
+          "drawNumber" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Number to assign to this draw. Shown in draw reports and file names",
+            "example" : 364
+          },
+          "productId" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below."
+          },
+          "numberOfSets" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "description" : "How many sets of numbers to draw"
+          },
+          "drawMatrix" : {
+            "$ref" : "#/components/schemas/DrawMatrix"
+          },
+          "distribution" : {
+            "$ref" : "#/components/schemas/Distribution"
+          },
+          "extractData" : {
+            "$ref" : "#/components/schemas/ExtractData"
+          }
+        }
+      },
+      "body" : {
+        "required" : [ "drawRequests" ],
+        "type" : "object",
+        "properties" : {
+          "clientTransactionId" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique ID for this transaction",
+            "format" : "int64",
+            "example" : "TXID-102030450-11"
+          },
+          "clientBusinessDay" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Client's current business day. Format is YYMMDD.",
+            "example" : 200930
+          },
+          "testMode" : {
+            "type" : "boolean",
+            "description" : "Marks the draw results as \"test mode\" and not valid for use"
+          },
+          "drawUsers" : {
+            "type" : "array",
+            "description" : "Draw personnel names and login times to be included in the draw reports",
+            "items" : {
+              "$ref" : "#/components/schemas/DrawUsers"
+            }
+          },
+          "drawRequests" : {
+            "type" : "array",
+            "description" : "One or more draw requests to be processed",
+            "items" : {
+              "$ref" : "#/components/schemas/drawsregulardraws_drawRequests"
+            }
+          }
+        }
+      },
+      "inline_response_200" : {
+        "type" : "object",
+        "properties" : {
+          "clientTransaction-id" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique ID for this transaction"
+          },
+          "transactionStatus" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "serverId" : {
+            "type" : "string",
+            "description" : "RNG server identifier",
+            "example" : "RNG-TEST-87"
+          },
+          "serverVersion" : {
+            "type" : "string",
+            "description" : "RNG server version number",
+            "example" : "9.3"
+          },
+          "serverTime" : {
+            "type" : "string",
+            "description" : "Current system time of the RNG server",
+            "format" : "date-time",
+            "example" : "2020-09-30T18:30:23Z"
+          },
+          "rngBusinessDay" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Business day under which the transaction was recorded. Format is YYMMDD.",
+            "example" : 200930
+          },
+          "testMode" : {
+            "type" : "boolean",
+            "description" : "Marks the draw results as \"test mode\" and not valid for use"
+          },
+          "drawResults" : {
+            "type" : "array",
+            "description" : "Array of results objects, corresponding to array of requests",
+            "items" : {
+              "$ref" : "#/components/schemas/inline_response_200_drawResults"
+            }
+          }
+        },
+        "example" : {
+          "serverVersion" : "9.3",
+          "transactionStatus" : {
+            "code" : 0,
+            "description" : "description"
+          },
+          "drawResults" : [ {
+            "recordId" : "EX191109870000000125",
+            "productId" : 0,
+            "sets" : [ [ 0, 0 ], [ 0, 0 ] ],
+            "drawStatus" : null,
+            "clientRequestId" : "RQID-31234545-32",
+            "drawMatrix" : {
+              "minValue" : 1,
+              "setSize" : 6,
+              "withReplacement" : true,
+              "maxValue" : 49,
+              "exclusions" : [ 0, 0 ]
+            },
+            "drawTime" : "2020-09-30T18:30:23Z",
+            "distribution" : {
+              "depletionType" : "NoDepletion",
+              "values" : [ 0, 0 ]
+            },
+            "recordHandle" : 0
+          }, {
+            "recordId" : "EX191109870000000125",
+            "productId" : 0,
+            "sets" : [ [ 0, 0 ], [ 0, 0 ] ],
+            "drawStatus" : null,
+            "clientRequestId" : "RQID-31234545-32",
+            "drawMatrix" : {
+              "minValue" : 1,
+              "setSize" : 6,
+              "withReplacement" : true,
+              "maxValue" : 49,
+              "exclusions" : [ 0, 0 ]
+            },
+            "drawTime" : "2020-09-30T18:30:23Z",
+            "distribution" : {
+              "depletionType" : "NoDepletion",
+              "values" : [ 0, 0 ]
+            },
+            "recordHandle" : 0
+          } ],
+          "testMode" : true,
+          "clientTransaction-id" : "clientTransaction-id",
+          "serverTime" : "2020-09-30T18:30:23Z",
+          "rngBusinessDay" : 200930,
+          "serverId" : "RNG-TEST-87"
+        }
+      },
+      "drawsquickpicks_drawRequests" : {
+        "required" : [ "numberOfSets", "productId" ],
+        "type" : "object",
+        "properties" : {
+          "clientRequestId" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique identifier for this draw request",
+            "example" : "RQID-31234545-32"
+          },
+          "productId" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Identifier of the product definition to be drawn. The product defines all draw parameters, and MAY allow them to be overridden with the parameters below."
+          },
+          "numberOfSets" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "description" : "How many sets of numbers to draw"
+          },
+          "drawMatrix" : {
+            "$ref" : "#/components/schemas/DrawMatrix"
+          },
+          "distribution" : {
+            "$ref" : "#/components/schemas/Distribution"
+          }
+        }
+      },
+      "body_1" : {
+        "required" : [ "drawRequests" ],
+        "type" : "object",
+        "properties" : {
+          "clientTransactionId" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique ID for this transaction",
+            "format" : "int64",
+            "example" : "TXID-102030450-11"
+          },
+          "clientBusinessDay" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Client's current business day. Format is YYMMDD.",
+            "example" : 200930
+          },
+          "drawRequests" : {
+            "type" : "array",
+            "description" : "One or more draw requests to be processed",
+            "items" : {
+              "$ref" : "#/components/schemas/drawsquickpicks_drawRequests"
+            }
+          }
+        }
+      },
+      "inline_response_200_1" : {
+        "required" : [ "drawResults" ],
+        "type" : "object",
+        "properties" : {
+          "clientTransaction-id" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique ID for this transaction"
+          },
+          "transactionStatus" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "serverId" : {
+            "type" : "string",
+            "description" : "RNG server identifier",
+            "example" : "RNG-TEST-87"
+          },
+          "serverVersion" : {
+            "type" : "string",
+            "description" : "RNG server version number",
+            "example" : "9.3"
+          },
+          "rngBusinessDay" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Business day under which the transaction was recorded. Format is YYMMDD.",
+            "example" : 200930
+          },
+          "drawResults" : {
+            "type" : "array",
+            "description" : "Array of results objects, corresponding to array of requests",
+            "items" : {
+              "$ref" : "#/components/schemas/inline_response_200_1_drawResults"
+            }
+          }
+        },
+        "example" : {
+          "serverVersion" : "9.3",
+          "transactionStatus" : {
+            "code" : 0,
+            "description" : "description"
+          },
+          "drawResults" : [ {
+            "recordId" : "EX191109870000000125",
+            "productId" : 0,
+            "sets" : [ [ 0, 0 ], [ 0, 0 ] ],
+            "drawStatus" : null,
+            "clientRequestId" : "RQID-31234545-32",
+            "drawTime" : "2020-09-30T18:30:23Z"
+          }, {
+            "recordId" : "EX191109870000000125",
+            "productId" : 0,
+            "sets" : [ [ 0, 0 ], [ 0, 0 ] ],
+            "drawStatus" : null,
+            "clientRequestId" : "RQID-31234545-32",
+            "drawTime" : "2020-09-30T18:30:23Z"
+          } ],
+          "clientTransaction-id" : "clientTransaction-id",
+          "rngBusinessDay" : 200930,
+          "serverId" : "RNG-TEST-87"
+        }
+      },
+      "inline_response_200_drawResults" : {
+        "required" : [ "drawStatus" ],
+        "type" : "object",
+        "properties" : {
+          "clientRequestId" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique identifier for this draw request",
+            "example" : "RQID-31234545-32"
+          },
+          "drawStatus" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "productId" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Identifier of the product definition drawn"
+          },
+          "drawMatrix" : {
+            "$ref" : "#/components/schemas/DrawMatrix"
+          },
+          "distribution" : {
+            "$ref" : "#/components/schemas/Distribution"
+          },
+          "drawTime" : {
+            "type" : "string",
+            "description" : "Timestamp of the draw",
+            "format" : "date-time",
+            "example" : "2020-09-30T18:30:23Z"
+          },
+          "recordId" : {
+            "type" : "string",
+            "description" : "Unique record identifier for the draw",
+            "example" : "EX191109870000000125"
+          },
+          "recordHandle" : {
+            "minimum" : -1,
+            "type" : "integer",
+            "description" : "Handle that can optionally be used for faster verification processing",
+            "format" : "int64"
+          },
+          "sets" : {
+            "type" : "array",
+            "description" : "Numbers drawn",
+            "items" : {
+              "type" : "array",
+              "items" : {
+                "minimum" : 0,
+                "type" : "integer"
+              }
+            }
+          }
+        },
+        "example" : {
+          "recordId" : "EX191109870000000125",
+          "productId" : 0,
+          "sets" : [ [ 0, 0 ], [ 0, 0 ] ],
+          "drawStatus" : null,
+          "clientRequestId" : "RQID-31234545-32",
+          "drawMatrix" : {
+            "minValue" : 1,
+            "setSize" : 6,
+            "withReplacement" : true,
+            "maxValue" : 49,
+            "exclusions" : [ 0, 0 ]
+          },
+          "drawTime" : "2020-09-30T18:30:23Z",
+          "distribution" : {
+            "depletionType" : "NoDepletion",
+            "values" : [ 0, 0 ]
+          },
+          "recordHandle" : 0
+        }
+      },
+      "inline_response_200_1_drawResults" : {
+        "required" : [ "drawStatus" ],
+        "type" : "object",
+        "properties" : {
+          "clientRequestId" : {
+            "pattern" : "^[A-Za-z0-9 -]+",
+            "type" : "string",
+            "description" : "Client's unique identifier for this draw request",
+            "example" : "RQID-31234545-32"
+          },
+          "drawStatus" : {
+            "$ref" : "#/components/schemas/Status"
+          },
+          "productId" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Identifier of the product definition drawn"
+          },
+          "drawTime" : {
+            "type" : "string",
+            "description" : "Timestamp of the draw",
+            "format" : "date-time",
+            "example" : "2020-09-30T18:30:23Z"
+          },
+          "recordId" : {
+            "type" : "string",
+            "description" : "Unique record identifier for the draw",
+            "example" : "EX191109870000000125"
+          },
+          "sets" : {
+            "type" : "array",
+            "description" : "Numbers drawn",
+            "items" : {
+              "type" : "array",
+              "items" : {
+                "minimum" : 0,
+                "type" : "integer"
+              }
+            }
+          }
+        },
+        "example" : {
+          "recordId" : "EX191109870000000125",
+          "productId" : 0,
+          "sets" : [ [ 0, 0 ], [ 0, 0 ] ],
+          "drawStatus" : null,
+          "clientRequestId" : "RQID-31234545-32",
+          "drawTime" : "2020-09-30T18:30:23Z"
+        }
+      }
+    }
+  }
+}
