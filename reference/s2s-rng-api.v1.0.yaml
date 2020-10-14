@@ -1,4 +1,4 @@
-openapi: 3.0.0
+-openapi: 3.0.0
 info:
   title: S2S RNG API
   version: 1.0.0
@@ -7,6 +7,298 @@ info:
     url: 'http://www.szrek.com'
 servers:
   - url: 'http://localhost:55002/s2s-rng-api/v1.0'
+components:
+  schemas:
+    DrawUsers:
+      title: DrawUsers
+      type: object
+      description: 'Draw personnel to be included in the draw reports. The first user is the Draw Manager, second user is the Draw Auditor, and third is the Draw Observer.'
+      properties:
+        name:
+          type: string
+          description: Full name of the user as it should appear in the draw reports
+          example: John Smith
+        loginTime:
+          type: string
+          format: date-time
+          description: 'If included, the login time for the user will appear in the draw reports'
+          example: '2020-03-15T15:47:44Z'
+    DrawMatrix:
+      title: DrawMatrix
+      type: object
+      description: The complete draw parameter matrix. The product definition may or may not allow overriding of these values
+      properties:
+        numberOfSets:
+          type: integer
+          description: How many sets of numbers to draw
+          minimum: 1
+        setSize:
+          type: integer
+          description: How many numbers in each set
+          example: 6
+          minimum: 1
+        minValue:
+          type: integer
+          description: Lowest number that can be drawn
+          example: 1
+          minimum: 0
+        maxValue:
+          type: integer
+          description: Highest number that can be drawn
+          example: 49
+          minimum: 0
+        withReplacement:
+          type: boolean
+          description: True if drawn numbers can be repeated within a set
+        sortOrder:
+          type: string
+          description: Sort order for the draw results within a set
+          enum:
+            - UNSORTED
+            - ASCENDING
+          example: UNSORTED
+        exclusions:
+          type: array
+          description: Values to be excluded from the draw
+          uniqueItems: true
+          items:
+            type: integer
+            example: 0
+        distribution:
+          $ref: '#/components/schemas/Distribution'
+      required:
+        - numberOfSets
+    Distribution:
+      title: Distribution
+      type: object
+      description: Initial distribution values and depletion type used for distribution-type products
+      properties:
+        values:
+          type: array
+          description: Initial distribution values
+          items:
+            type: integer
+        depletionType:
+          type: string
+          enum:
+            - NO_DEPLETION
+            - DECREASE_ENTRY
+            - REMOVE_ENTRY
+          description: Specifies method of depletion for the distribution values
+          example: NO_DEPLETION
+      x-examples: {}
+    UserData:
+      title: UserData
+      type: array
+      description: 'Optional data fields that are not used for RNG, but are signed and logged. They can also be extracted and used in post-processing and reports.'
+      items:
+        type: string
+    Status:
+      title: Status
+      type: object
+      description: Status code and description
+      properties:
+        code:
+          type: integer
+          description: Numeric error or status code
+        description:
+          type: string
+          description: Short description of the error or status code
+    FieldError:
+      title: FieldError
+      type: object
+      description: Details about a specific field error
+      properties:
+        code:
+          type: string
+          description: Error code name
+        message:
+          type: string
+          description: Additional detail about the error code
+        fieldName:
+          type: string
+          description: 'Name of the field that caused the error, if applicable'
+        path:
+          type: string
+          description: 'Path to the field that caused the error, if applicable'
+    ErrorResponse:
+      description: Describes the error and any specific problems with fields in the request.
+      allOf:
+        - $ref: '#/components/schemas/Status'
+        - type: object
+          properties:
+            fieldErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/FieldError'
+      x-examples:
+        example-1:
+          code: 999
+          description: Input validation failed
+          fieldErrors:
+            - code: INVALID_VALUE
+              message: Product not found
+              fieldName: productId
+              path: 'drawRequests[1].productId'
+    SecurityRequest:
+      title: SecurityRequest
+      type: object
+      description: Optional requests for security blocks to be included in the response
+      properties:
+        blockType:
+          type: string
+          description: Security block type identifier
+        version:
+          type: string
+          description: Format version of the security block
+      required:
+        - blockType
+    SecurityBlock:
+      allOf:
+        - $ref: '#/components/schemas/SecurityRequest'
+        - type: object
+          description: 'Security blocks are used to authenticate various elements of the transaction. It can be an encrypted ICS block, product checksums, etc.'
+          properties:
+            blockType:
+              type: string
+              description: Security block type identifier
+            version:
+              type: string
+              description: Format version of the security block
+            keyId:
+              type: string
+              description: 'Identifier of the public key needed to verify the security block, if applicable'
+            data:
+              type: string
+              description: Base 64 encoded content of the security block
+          required:
+            - blockType
+    SecurityRequests:
+      type: array
+      description: Requested transaction security blocks
+      items:
+        $ref: '#/components/schemas/SecurityRequest'
+    SecurityBlocks:
+      type: array
+      items:
+        $ref: '#/components/schemas/SecurityBlock'
+    BaseBatchRequest:
+      title: BaseBatchRequest
+      type: object
+      properties:
+        clientTransactionId:
+          type: string
+          description: Client's unique ID for this transaction
+          format: int64
+          example: TXID-102030450-11
+        clientBusinessDay:
+          type: integer
+          description: Client's current business day. Format is YYMMDD.
+          example: 200930
+        includeDrawMatrix:
+          type: boolean
+          description: Include RNG parameter matrix in draw results
+    BaseDrawRequest:
+      title: BaseDrawRequest
+      type: object
+      properties:
+        clientDrawId:
+          type: string
+          description: Client's unique identifier for this draw request
+          example: RQID-31234545-32
+        productId:
+          type: integer
+          description: 'Identifier of the product to be drawn. The product defines all draw parameters, and MAY allow them to be overridden in the draw matrix structure.'
+        drawMatrix:
+          $ref: '#/components/schemas/DrawMatrix'
+        userData:
+          $ref: '#/components/schemas/UserData'
+      required:
+        - productId
+    BaseBatchResponse:
+      title: BaseBatchResponse
+      type: object
+      properties:
+        clientTransactionId:
+          type: string
+          description: Client's unique ID for this transaction
+        transactionStatus:
+          $ref: '#/components/schemas/Status'
+        serverId:
+          type: string
+          example: RNG-TEST-87
+          description: RNG server identifier
+        serverVersion:
+          type: string
+          example: '9.3'
+          description: RNG server version number
+        serverTime:
+          type: string
+          format: date-time
+          example: '2020-09-30T18:30:23Z'
+          description: Current system time of the RNG server
+        rngBusinessDay:
+          type: integer
+          description: Business day under which the transaction was recorded. Format is YYMMDD.
+          example: 200930
+    BaseDrawResult:
+      title: BaseDrawResult
+      type: object
+      properties:
+        clientDrawId:
+          type: string
+          description: Client's unique identifier for this draw request
+          example: RQID-31234545-32
+        drawStatus:
+          $ref: '#/components/schemas/Status'
+        productId:
+          type: integer
+          description: Identifier of the product definition used for the draw
+        productChecksum:
+          type: number
+          description: CRC32 checksum of the product definition used for the draw
+        drawMatrix:
+          $ref: '#/components/schemas/DrawMatrix'
+        drawTime:
+          type: string
+          format: date-time
+          description: Timestamp of the draw
+          example: '2020-09-30T18:30:23Z'
+        recordId:
+          type: string
+          description: Unique record identifier for the draw
+          example: EX191109870000000125
+        recordHandle:
+          type: integer
+          description: Handle that can optionally be used for faster verification processing
+          format: int64
+        sets:
+          type: array
+          description: Numbers drawn
+          items:
+            type: array
+            items:
+              type: integer
+      required:
+        - drawStatus
+  responses:
+    400-Bad-Request:
+      description: Bad Request
+      headers: {}
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            Example:
+              value:
+                code: 999
+                description: Input validation failed
+                fieldErrors:
+                  - code: INVALID_VALUE
+                    message: Product not found
+                    fieldName: productId
+                    path: 'drawRequests[1].productId'
 paths:
   /draws:
     post:
@@ -139,54 +431,31 @@ paths:
               examples: {}
       description: Conduct random number draws
       requestBody:
+        description: ''
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                clientTransactionId:
-                  type: string
-                  description: Client's unique ID for this transaction
-                  format: int64
-                  example: TXID-102030450-11
-                clientBusinessDay:
-                  type: integer
-                  description: Client's current business day. Format is YYMMDD.
-                  example: 200930
-                includeDrawMatrix:
-                  type: boolean
-                  description: Include RNG parameter matrix in draw results
-                drawRequests:
-                  type: array
-                  description: One or more draw requests to be processed
-                  items:
-                    type: object
-                    properties:
-                      clientDrawId:
-                        type: string
-                        description: Client's unique identifier for this draw request
-                        example: RQID-31234545-32
-                      productId:
-                        type: integer
-                        description: 'Identifier of the product to be drawn. The product defines all draw parameters, and MAY allow them to be overridden in the draw matrix structure.'
-                      drawMatrix:
-                        $ref: '#/components/schemas/DrawMatrix'
-                      userData:
-                        $ref: '#/components/schemas/UserData'
-                    required:
-                      - productId
-                securityRequests:
-                  type: array
-                  description: Requested transaction security blocks
-                  items:
-                    $ref: '#/components/schemas/SecurityBlock'
-              required:
-                - drawRequests
+              allOf:
+                - $ref: '#/components/schemas/BaseBatchRequest'
+                - type: object
+                  properties:
+                    drawRequests:
+                      description: One or more draw requests to be processed
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: '#/components/schemas/BaseDrawRequest'
+                          - type: object
+                            properties:
+                              Test:
+                                type: string
+                    securityRequests:
+                      $ref: '#/components/schemas/SecurityRequests'
+                  required:
+                    - drawRequests
             examples: {}
-        description: ''
       parameters: []
       tags:
-        - standard draw
         - rng
   /draws/quick-picks:
     post:
@@ -313,7 +582,6 @@ paths:
         description: ''
       parameters: []
       tags:
-        - standard draw
         - rng
   /draws/file-draws:
     post:
@@ -495,7 +763,6 @@ paths:
         description: ''
       parameters: []
       tags:
-        - standard draw
         - rng
   /draws/regular-draws:
     post:
@@ -680,14 +947,12 @@ paths:
         description: ''
       parameters: []
       tags:
-        - standard draw
         - rng
   /rng-status:
     get:
       summary: Get RNG Status
       tags:
         - status
-        - rng
       responses:
         '200':
           description: OK
@@ -809,192 +1074,7 @@ paths:
       operationId: get-server-status
       description: Get current status of the RNG server and the configured products
     parameters: []
-components:
-  schemas:
-    DrawUsers:
-      title: DrawUsers
-      type: object
-      description: 'Draw personnel to be included in the draw reports. The first user is the Draw Manager, second user is the Draw Auditor, and third is the Draw Observer.'
-      properties:
-        name:
-          type: string
-          description: Full name of the user as it should appear in the draw reports
-          example: John Smith
-        loginTime:
-          type: string
-          format: date-time
-          description: 'If included, the login time for the user will appear in the draw reports'
-          example: '2020-03-15T15:47:44Z'
-    DrawMatrix:
-      title: DrawMatrix
-      type: object
-      description: The complete draw parameter matrix. The product definition may or may not allow overriding of these values
-      properties:
-        numberOfSets:
-          type: integer
-          description: How many sets of numbers to draw
-          minimum: 1
-        setSize:
-          type: integer
-          description: How many numbers in each set
-          example: 6
-          minimum: 1
-        minValue:
-          type: integer
-          description: Lowest number that can be drawn
-          example: 1
-          minimum: 0
-        maxValue:
-          type: integer
-          description: Highest number that can be drawn
-          example: 49
-          minimum: 0
-        withReplacement:
-          type: boolean
-          description: True if drawn numbers can be repeated within a set
-        sortOrder:
-          type: string
-          description: Sort order for the draw results within a set
-          enum:
-            - UNSORTED
-            - ASCENDING
-          example: UNSORTED
-        exclusions:
-          type: array
-          description: Values to be excluded from the draw
-          uniqueItems: true
-          items:
-            type: integer
-            example: 0
-        distribution:
-          $ref: '#/components/schemas/Distribution'
-      required:
-        - numberOfSets
-    Distribution:
-      title: Distribution
-      type: object
-      description: Initial distribution values and depletion type used for distribution-type products
-      properties:
-        values:
-          type: array
-          description: Initial distribution values
-          items:
-            type: integer
-        depletionType:
-          type: string
-          enum:
-            - NO_DEPLETION
-            - DECREASE_ENTRY
-            - REMOVE_ENTRY
-          description: Specifies method of depletion for the distribution values
-          example: NO_DEPLETION
-      x-examples: {}
-    UserData:
-      title: UserData
-      type: array
-      description: 'Optional data fields that are not used for RNG, but are signed and logged. They can also be extracted and used in post-processing and reports.'
-      items:
-        type: string
-    Status:
-      title: Status
-      type: object
-      description: Status code and description
-      properties:
-        code:
-          type: integer
-          description: Numeric error or status code
-        description:
-          type: string
-          description: Short description of the error or status code
-    FieldError:
-      title: FieldError
-      type: object
-      description: Details about a specific field error
-      properties:
-        code:
-          type: string
-          description: Error code name
-        message:
-          type: string
-          description: Additional detail about the error code
-        fieldName:
-          type: string
-          description: 'Name of the field that caused the error, if applicable'
-        path:
-          type: string
-          description: 'Path to the field that caused the error, if applicable'
-    ErrorResponse:
-      description: Describes the error and any specific problems with fields in the request.
-      allOf:
-        - $ref: '#/components/schemas/Status'
-        - type: object
-          properties:
-            fieldErrors:
-              type: array
-              items:
-                $ref: '#/components/schemas/FieldError'
-      x-examples:
-        example-1:
-          code: 999
-          description: Input validation failed
-          fieldErrors:
-            - code: INVALID_VALUE
-              message: Product not found
-              fieldName: productId
-              path: 'drawRequests[1].productId'
-    SecurityRequest:
-      title: SecurityRequest
-      type: object
-      description: Optional requests for security blocks to be included in the response
-      properties:
-        blockType:
-          type: string
-          description: Security block type identifier
-        version:
-          type: string
-          description: Format version of the security block
-      required:
-        - blockType
-    SecurityBlock:
-      allOf:
-        - $ref: '#/components/schemas/SecurityRequest'
-        - type: object
-          description: 'Security blocks are used to authenticate various elements of the transaction. It can be an encrypted ICS block, product checksums, etc.'
-          properties:
-            blockType:
-              type: string
-              description: Security block type identifier
-            version:
-              type: string
-              description: Format version of the security block
-            keyId:
-              type: string
-              description: 'Identifier of the public key needed to verify the security block, if applicable'
-            data:
-              type: string
-              description: Base 64 encoded content of the security block
-          required:
-            - blockType
-  responses:
-    400-Bad-Request:
-      description: Bad Request
-      headers: {}
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          examples:
-            Example:
-              value:
-                code: 999
-                description: Input validation failed
-                fieldErrors:
-                  - code: INVALID_VALUE
-                    message: Product not found
-                    fieldName: productId
-                    path: 'drawRequests[1].productId'
 security: []
 tags:
-  - name: standard draw
   - name: status
   - name: rng
