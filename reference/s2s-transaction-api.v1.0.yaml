@@ -135,7 +135,49 @@ components:
           example: '2020-09-30T18:30:23Z'
       required:
         - status
-  responses:
+    SecurityModule:
+      title: SecurityModule
+      type: object
+      description: 'Details about the cryptographic Hardware Security Module (HSM) '
+      properties:
+        serial:
+          type: string
+          description: Serial number of the device used
+          example: 01000000F00019C8
+        sequencer:
+          type: integer
+          description: Sequence number assigned by the device
+          example: 734595
+        time:
+          type: string
+          description: Real-time clock value at the time of signing
+          example: '2020-09-30T18:30:23Z'
+        keyId:
+          type: string
+          description: Identifier of the key pair currently in use on the HSM
+          example: 308C-1328-3940-DC32
+    StoredRecord:
+      title: StoredRecord
+      type: object
+      properties:
+        clientRecordId:
+          type: string
+          description: Client's unique identifier for this record
+          example: RQID-31234545-32
+        status:
+          $ref: '#/components/schemas/Status'
+        recordId:
+          type: string
+          description: Unique record identifier for the stored record
+          example: EX191109870000000125
+        transactionTime:
+          type: string
+          format: date-time
+          description: Timestamp of the stored record
+          example: '2020-09-30T18:30:23Z'
+        userData:
+          $ref: '#/components/schemas/UserData'
+responses:
     BadRequestResponse:
       description: Bad Request
       headers: {}
@@ -308,6 +350,15 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hsm:
+                    $ref: '#/components/schemas/SecurityModule'
+                  '':
+                    type: string
         '400':
           description: Bad Request
         '404':
