@@ -23,9 +23,11 @@ components:
         code:
           type: integer
           description: Numeric error or status code
+          example: 0
         description:
           type: string
           description: Short description of the error or status code
+          example: Success
     FieldError:
       title: FieldError
       type: object
@@ -67,10 +69,10 @@ components:
       type: object
       properties:
         clientTransactionId:
-          type: string
+          type: integer
           description: Client's unique ID for this transaction
           format: int64
-          example: TXID-102030450-11
+          example: 102030450
         clientBusinessDay:
           type: integer
           description: Client's current business day. Format is YYMMDD.
@@ -90,9 +92,11 @@ components:
       type: object
       properties:
         clientTransactionId:
-          type: string
+          type: integer
           description: Client's unique ID for this transaction
-        transactionStatus:
+          format: int64
+          example: 102030450
+        status:
           $ref: '#/components/schemas/Status'
         serverId:
           type: string
@@ -112,7 +116,7 @@ components:
       properties:
         clientRecordId:
           type: string
-          description: Client's unique identifier for this store request
+          description: Client's unique identifier for this record
           example: RQID-31234545-32
         status:
           $ref: '#/components/schemas/Status'
@@ -298,10 +302,28 @@ paths:
     parameters: []
   /transactions/verification:
     get:
-      summary: Your GET endpoint
+      summary: Verify Stored Transaction
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
       operationId: get-transactions-verification
+      description: Retrieves and verifies a previously stored record. Parameter MUST include one of either unique-record-id or client-record-id.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: unique-record-id
+          description: Search using the Unique Record Identifier (URI) returned in the store response
+        - schema:
+            type: string
+          in: query
+          name: client-record-id
+          description: Search using the clientRecordId sent in the draw request
 security: []
 tags:
   - name: Status

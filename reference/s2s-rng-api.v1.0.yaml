@@ -90,7 +90,7 @@ components:
     UserData:
       title: UserData
       type: array
-      description: 'Optional data fields that are not used for RNG, but are signed and logged. They can also be extracted and used in post-processing and reports.'
+      description: Optional data fields that are signed and logged. They can also be extracted and used in post-processing and reports.
       items:
         type: string
     Status:
@@ -101,9 +101,11 @@ components:
         code:
           type: integer
           description: Numeric error or status code
+          example: 0
         description:
           type: string
           description: Short description of the error or status code
+          example: Success
     FieldError:
       title: FieldError
       type: object
@@ -187,10 +189,10 @@ components:
       type: object
       properties:
         clientTransactionId:
-          type: string
+          type: integer
           description: Client's unique ID for this transaction
           format: int64
-          example: TXID-102030450-11
+          example: 102030450
         clientBusinessDay:
           type: integer
           description: Client's current business day. Format is YYMMDD.
@@ -217,9 +219,11 @@ components:
       type: object
       properties:
         clientTransactionId:
-          type: string
+          type: integer
           description: Client's unique ID for this transaction
-        transactionStatus:
+          format: int64
+          example: 102030450
+        status:
           $ref: '#/components/schemas/Status'
         serverId:
           type: string
