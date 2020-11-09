@@ -177,7 +177,7 @@ components:
           example: '2020-09-30T18:30:23Z'
         userData:
           $ref: '#/components/schemas/UserData'
-responses:
+  responses:
     BadRequestResponse:
       description: Bad Request
       headers: {}
@@ -355,10 +355,10 @@ paths:
               schema:
                 type: object
                 properties:
+                  record:
+                    $ref: '#/components/schemas/StoredRecord'
                   hsm:
                     $ref: '#/components/schemas/SecurityModule'
-                  '':
-                    type: string
         '400':
           description: Bad Request
         '404':
