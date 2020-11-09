@@ -630,7 +630,8 @@ paths:
   /draws:
     get:
       summary: Verify Draw
-      tags: []
+      tags:
+        - RNG
       responses:
         '200':
           description: OK
