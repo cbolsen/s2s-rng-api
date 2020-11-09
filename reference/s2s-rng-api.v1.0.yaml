@@ -229,7 +229,7 @@ components:
           type: string
           example: '9.3'
           description: RNG server version number
-        rngBusinessDay:
+        businessDay:
           type: integer
           description: Business day under which the transaction was recorded. Format is YYMMDD.
           example: 200930
