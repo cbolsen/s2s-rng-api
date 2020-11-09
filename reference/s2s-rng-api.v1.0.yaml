@@ -346,7 +346,7 @@ paths:
             examples: {}
       parameters: []
       tags:
-        - rng
+        - RNG
   /draws/file-draws:
     post:
       summary: File Draw
@@ -422,7 +422,7 @@ paths:
             examples: {}
       parameters: []
       tags:
-        - rng
+        - RNG
   /draws/regular-draws:
     post:
       summary: Regular Draw
@@ -499,12 +499,10 @@ paths:
         description: ''
       parameters: []
       tags:
-        - rng
+        - RNG
   /rng-status:
     get:
-      summary: Get RNG Status
-      tags:
-        - status
+      summary: RNG Status
       responses:
         '200':
           description: OK
@@ -626,8 +624,10 @@ paths:
                         keyId: 308C-1328-3940-DC32
       operationId: get-server-status
       description: Get current status of the RNG server and the configured products
+      tags:
+        - Status
     parameters: []
 security: []
 tags:
-  - name: status
-  - name: rng
+  - name: RNG
+  - name: Status
