@@ -15,6 +15,11 @@ components:
       description: Optional data fields that are signed and logged. They can also be extracted and used in post-processing and reports.
       items:
         type: string
+      x-examples:
+        example-1:
+          - myfieldvalue1
+          - myfieldvalue2
+          - '123456'
     Status:
       title: Status
       type: object
@@ -375,7 +380,7 @@ paths:
             type: string
           in: query
           name: client-record-id
-          description: Search using the clientRecordId sent in the draw request
+          description: Search using the clientRecordId sent in the store request
 security: []
 tags:
   - name: Status
