@@ -303,7 +303,8 @@ paths:
   /transactions/verification:
     get:
       summary: Verify Stored Transaction
-      tags: []
+      tags:
+        - Transactions
       responses:
         '200':
           description: OK
