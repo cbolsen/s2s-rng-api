@@ -165,9 +165,9 @@ paths:
                   - $ref: '#/components/schemas/BatchResponse'
                   - type: object
                     properties:
-                      drawResults:
+                      results:
                         type: array
-                        description: 'Array of results objects, corresponding to the array of requests'
+                        description: 'Array of results records, corresponding to the array of requests'
                         items:
                           allOf:
                             - $ref: '#/components/schemas/StoreResult'
