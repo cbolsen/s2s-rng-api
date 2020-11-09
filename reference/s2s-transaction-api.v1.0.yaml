@@ -366,6 +366,11 @@ paths:
                     $ref: '#/components/schemas/SecurityModule'
         '400':
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
         '404':
           description: Not Found
       operationId: get-transactions-verification

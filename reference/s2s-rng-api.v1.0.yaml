@@ -623,7 +623,7 @@ paths:
       tags:
         - Status
     parameters: []
-  /draws:
+  /draws/verification:
     get:
       summary: Verify Draw
       tags:
@@ -631,11 +631,22 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  retrievalStatus:
+                    $ref: ./s2s-transaction-api.v1.0.yaml#/components/schemas/Status
+                  drawResult:
+                    $ref: '#/components/schemas/DrawResult'
+                  hsm:
+                    $ref: ./s2s-transaction-api.v1.0.yaml#/components/schemas/SecurityModule
         '400':
           description: Bad Request
         '404':
           description: Not Found
-      operationId: get-draws
+      operationId: get-draws-verification
       description: Retrieves and verifies a previously recorded draw. Parameter MUST include one of either unique-record-id or client-record-id.
       parameters:
         - schema:
@@ -648,6 +659,7 @@ paths:
           in: query
           name: client-record-id
           description: Search using the clientRecordId sent in the draw request
+    parameters: []
 security: []
 tags:
   - name: RNG
