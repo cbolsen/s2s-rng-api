@@ -196,26 +196,6 @@ paths:
       tags:
         - Transactions
     parameters: []
-    get:
-      summary: Retrieve and Verify a Transaction
-      operationId: get-transactions
-      responses:
-        '200':
-          description: OK
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: uri
-          description: Search using the Unique Record Identifier for the transaction
-        - schema:
-            type: string
-          in: query
-          name: client-record-id
-          description: Search using the clientRecordId sent in the store request
-      description: Retrieves and verifies a previously stored transaction. Parameter MUST include one of either uri or client-record-id.
-      tags:
-        - Transactions
   /server-status:
     get:
       summary: Server Status
@@ -316,6 +296,12 @@ paths:
       tags:
         - Status
     parameters: []
+  /transactions/verification:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-transactions-verification
 security: []
 tags:
   - name: Status

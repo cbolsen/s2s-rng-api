@@ -623,6 +623,30 @@ paths:
       tags:
         - Status
     parameters: []
+  /draws:
+    get:
+      summary: Verify Draw
+      tags: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      operationId: get-draws
+      description: Retrieves and verifies a previously recorded draw. Parameter MUST include one of either unique-record-id or client-record-id.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: unique-record-id
+          description: Search using the Unique Record Identifier (URI) returned in the draw response
+        - schema:
+            type: string
+          in: query
+          name: client-record-id
+          description: Search using the clientRecordId sent in the draw request
 security: []
 tags:
   - name: RNG
