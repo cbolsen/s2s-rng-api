@@ -66,9 +66,7 @@ components:
           description: Input validation failed
           fieldErrors:
             - code: INVALID_VALUE
-              message: Product not found
-              fieldName: productId
-              path: 'drawRequests[1].productId'
+              message: not found
     BatchRequest:
       title: BatchRequest
       type: object
@@ -369,8 +367,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties: {}
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found
       operationId: get-transactions-verification
