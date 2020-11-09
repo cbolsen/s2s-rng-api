@@ -381,9 +381,7 @@ paths:
                                 drawMatrix:
                                   $ref: '#/components/schemas/DrawMatrix'
                       securityBlocks:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/SecurityBlock'
+                        $ref: '#/components/schemas/SecurityBlocks'
               examples: {}
         '400':
           $ref: '#/components/responses/BadRequestResponse'
@@ -455,9 +453,7 @@ paths:
                                 drawMatrix:
                                   $ref: '#/components/schemas/DrawMatrix'
                       securityBlocks:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/SecurityBlock'
+                        $ref: '#/components/schemas/SecurityBlocks'
               examples: {}
         '400':
           $ref: '#/components/responses/BadRequestResponse'
