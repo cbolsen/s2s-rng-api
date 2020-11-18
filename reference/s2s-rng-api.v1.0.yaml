@@ -23,14 +23,14 @@ components:
           format: date-time
           description: 'If included, the login time for the user will appear in the draw reports.'
           example: '2020-03-15T15:47:44Z'
-    DrawMatrix:
-      title: DrawMatrix
+    RngMatrix:
+      title: RngMatrix
       type: object
-      description: The complete draw parameter matrix. The product definition may or may not allow overriding of these values
+      description: The complete RNG parameter matrix. The product definition may or may not allow overriding of these values
       properties:
         numberOfSets:
           type: integer
-          description: How many sets of numbers to draw.
+          description: How many sets of numbers to generate.
           minimum: 1
         setSize:
           type: integer
@@ -39,27 +39,27 @@ components:
           minimum: 1
         minValue:
           type: integer
-          description: Lowest number that can be drawn.
+          description: Lowest number that can be generated.
           example: 1
           minimum: 0
         maxValue:
           type: integer
-          description: Highest number that can be drawn.
+          description: Highest number that can be generated.
           example: 49
           minimum: 0
         withReplacement:
           type: boolean
-          description: True if drawn numbers can be repeated within a set.
+          description: True if generated numbers can be repeated within a set.
         sortOrder:
           type: string
-          description: Sort order for the draw results within a set.
+          description: Sort order for the generated numbers within a set.
           enum:
             - UNSORTED
             - ASCENDING
           example: UNSORTED
         exclusions:
           type: array
-          description: Values to be excluded from the draw.
+          description: Values to be excluded from the generation.
           uniqueItems: true
           items:
             type: integer
@@ -141,7 +141,7 @@ components:
             - code: INVALID_VALUE
               message: Product not found
               fieldName: productId
-              path: 'drawRequests[1].productId'
+              path: 'rngRequests[1].productId'
     SecurityRequest:
       title: SecurityRequest
       type: object
@@ -194,7 +194,7 @@ components:
           example: 'GAMESERVER-1'
         clientTransactionId:
           type: integer
-          description: Client's unique ID for this transaction.
+          description: Client's unique identifier for this transaction.
           format: int64
           example: 102030450
         clientBusinessDay:
@@ -206,19 +206,19 @@ components:
           format: date-time
           description: Time on the client system.
           example: '2020-09-30T18:30:23Z'
-    DrawRequest:
-      title: DrawRequest
+    RngRequest:
+      title: RngRequest
       type: object
       properties:
-        clientDrawId:
+        clientRequestId:
           type: string
-          description: Client's unique identifier for this draw request.
+          description: Client's unique identifier for this RNG request.
           example: RQID-31234545-32
         productId:
           type: integer
-          description: 'Identifier of the product to be drawn. The product defines all draw parameters, and MAY allow them to be overridden in the draw matrix structure.'
-        drawMatrix:
-          $ref: '#/components/schemas/DrawMatrix'
+          description: 'Identifier of the product to be generated. The product defines all RNG parameters, and MAY allow them to be overridden in the RNG matrix structure.'
+        rngMatrix:
+          $ref: '#/components/schemas/RngMatrix'
         userData:
           $ref: '#/components/schemas/UserData'
       required:
@@ -246,26 +246,26 @@ components:
           type: integer
           description: Business day under which the transaction was recorded. Format is YYMMDD.
           example: 200930
-    DrawResult:
-      title: DrawResult
+    RngResult:
+      title: RngResult
       type: object
       properties:
-        clientDrawId:
+        clientRequestId:
           type: string
-          description: Client's unique identifier for this draw request.
+          description: Client's unique identifier for this RNG request.
           example: RQID-31234545-32
-        drawStatus:
+        rngStatus:
           $ref: '#/components/schemas/Status'
         sets:
           type: array
-          description: Numbers drawn
+          description: Numbers generated
           items:
             type: array
             items:
               type: integer
         recordId:
           type: string
-          description: Unique record identifier for the draw.
+          description: Unique record identifier.
           example: EX191109870000000125
         recordHandle:
           type: integer
@@ -273,17 +273,17 @@ components:
           format: int64
         productId:
           type: integer
-          description: Identifier of the product definition used for the draw.
+          description: Identifier of the product definition used for the random generation.
         productChecksum:
           type: number
-          description: CRC32 checksum of the product definition used for the draw.
+          description: CRC32 checksum of the product definition used for the random generation.
         drawTime:
           type: string
           format: date-time
-          description: Timestamp of the draw.
+          description: Timestamp of the random generation.
           example: '2020-09-30T18:30:23Z'
       required:
-        - drawStatus
+        - rng
     TestMode:
       type: boolean
       description: Marks the draw results as "test mode" and not valid for use.
@@ -293,8 +293,8 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/DrawUser'
-    IncludeDrawMatrix:
-      description: Include RNG parameter matrix in draw results.
+    ReturnRngMatrix:
+      description: Include RNG parameter matrix in RNG results.
       type: boolean
   responses:
     BadRequestResponse:
@@ -313,13 +313,13 @@ components:
                   - code: INVALID_VALUE
                     message: Product not found
                     fieldName: productId
-                    path: 'drawRequests[1].productId'
+                    path: 'rngRequests[1].productId'
 paths:
   /rng/quick-picks:
     post:
-      summary: Quick Pick Draw
-      operationId: post-draws-quick-picks
-      description: Conduct quick-pick draws. Returns reduced-size results for performance.
+      summary: Quick Pick RNG
+      operationId: post-rng-quick-picks
+      description: Conduct RNG for q. Returns reduced-size results for performance.
       responses:
         '200':
           description: OK
@@ -335,7 +335,7 @@ paths:
                         description: 'Array of results objects, corresponding to the array of requests'
                         items:
                           allOf:
-                            - $ref: '#/components/schemas/DrawResult'
+                            - $ref: '#/components/schemas/RngResult'
               examples: {}
         '400':
           $ref: '#/components/responses/BadRequestResponse'
@@ -348,20 +348,20 @@ paths:
                 - $ref: '#/components/schemas/BatchRequest'
                 - type: object
                   properties:
-                    drawRequests:
-                      description: One or more draw requests to be processed.
+                    rngRequests:
+                      description: One or more RNG requests to be processed.
                       type: array
                       items:
                         allOf:
-                          - $ref: '#/components/schemas/DrawRequest'
+                          - $ref: '#/components/schemas/RngRequest'
                   required:
-                    - drawRequests
+                    - rngRequests
             examples: {}
       parameters: []
       tags:
         - RNG
     parameters: []
-  /rng/draws:
+  /rng/file-draws:
     post:
       summary: File Draw
       operationId: post-draws-file-draws
@@ -383,13 +383,13 @@ paths:
                         description: 'Array of results objects, corresponding to the array of requests.'
                         items:
                           allOf:
-                            - $ref: '#/components/schemas/DrawResult'
+                            - $ref: '#/components/schemas/RngResult'
                             - type: object
                               properties:
                                 drawNumber:
                                   type: integer
-                                drawMatrix:
-                                  $ref: '#/components/schemas/DrawMatrix'
+                                rngMatrix:
+                                  $ref: '#/components/schemas/RngMatrix'
                       securityBlocks:
                         $ref: '#/components/schemas/SecurityBlocks'
               examples: {}
@@ -403,18 +403,18 @@ paths:
                 - $ref: '#/components/schemas/BatchRequest'
                 - type: object
                   properties:
-                    includeDrawMatrix:
-                      $ref: '#/components/schemas/IncludeDrawMatrix'
+                    returnRngMatrix:
+                      $ref: '#/components/schemas/ReturnRngMatrix'
                     testMode:
                       $ref: '#/components/schemas/TestMode'
                     drawUsers:
                       $ref: '#/components/schemas/DrawUsers'
-                    drawRequests:
-                      description: One or more draw requests to be processed.
+                    rngRequests:
+                      description: One or more RNG requests to be processed.
                       type: array
                       items:
                         allOf:
-                          - $ref: '#/components/schemas/DrawRequest'
+                          - $ref: '#/components/schemas/RngRequest'
                           - type: object
                             properties:
                               fileName:
@@ -428,7 +428,7 @@ paths:
                     securityRequests:
                       $ref: '#/components/schemas/SecurityRequests'
                   required:
-                    - drawRequests
+                    - rngRequests
             examples: {}
       parameters: []
       tags:
@@ -437,7 +437,7 @@ paths:
   /rng/regular-draws:
     post:
       summary: Regular Draw
-      operationId: post-draws-regular-draws
+      operationId: post-rng-regular-draws
       description: Conduct draws for regular draw products.
       responses:
         '200':
@@ -456,13 +456,13 @@ paths:
                         description: 'Array of results records, corresponding to the array of requests.'
                         items:
                           allOf:
-                            - $ref: '#/components/schemas/DrawResult'
+                            - $ref: '#/components/schemas/RngResult'
                             - type: object
                               properties:
                                 drawNumber:
                                   type: integer
-                                drawMatrix:
-                                  $ref: '#/components/schemas/DrawMatrix'
+                                rngMatrix:
+                                  $ref: '#/components/schemas/RngMatrix'
                       securityBlocks:
                         $ref: '#/components/schemas/SecurityBlocks'
               examples: {}
@@ -476,18 +476,18 @@ paths:
                 - $ref: '#/components/schemas/BatchRequest'
                 - type: object
                   properties:
-                    includeDrawMatrix:
-                      $ref: '#/components/schemas/IncludeDrawMatrix'
+                    returnRngMatrix:
+                      $ref: '#/components/schemas/ReturnRngMatrix'
                     testMode:
                       $ref: '#/components/schemas/TestMode'
                     drawUsers:
                       $ref: '#/components/schemas/DrawUsers'
-                    drawRequests:
-                      description: One or more draw requests to be processed.
+                    rngRequests:
+                      description: One or more RNG requests to be processed.
                       type: array
                       items:
                         allOf:
-                          - $ref: '#/components/schemas/DrawRequest'
+                          - $ref: '#/components/schemas/RngRequest'
                           - type: object
                             properties:
                               drawHash:
@@ -501,7 +501,7 @@ paths:
                     securityRequests:
                       $ref: '#/components/schemas/SecurityRequests'
                   required:
-                    - drawRequests
+                    - rngRequests
             examples: {}
         description: ''
       parameters: []
@@ -558,10 +558,10 @@ paths:
                           description: The configured RNG algorithm type for the product.
                         requestCount:
                           type: integer
-                          description: Current total number of draw requests for this product.
+                          description: Current total number of RNG requests for this product.
                         lastRequestTime:
                           type: string
-                          description: The time of the last draw request for this product.
+                          description: The time of the last RNG request for this product.
                           format: date-time
                   cards:
                     type: array
@@ -650,27 +650,27 @@ paths:
                 properties:
                   retrievalStatus:
                     $ref: ./s2s-transaction-api.v1.0.yaml#/components/schemas/Status
-                  drawResult:
-                    $ref: '#/components/schemas/DrawResult'
+                  rngResult:
+                    $ref: '#/components/schemas/RngResult'
                   hsm:
                     $ref: ./s2s-transaction-api.v1.0.yaml#/components/schemas/SecurityModule
         '400':
           description: Bad Request
         '404':
           description: Not Found
-      operationId: get-draws-verification
-      description: Retrieves and verifies a previously recorded draw. Parameter MUST include one of either unique-record-id or client-record-id.
+      operationId: get-rng-verification
+      description: Retrieves and verifies a previously generated RNG record. Parameter MUST include one of either unique-record-id or client-record-id.
       parameters:
         - schema:
             type: string
           in: query
           name: unique-record-id
-          description: Search using the Unique Record Identifier (URI) returned in the draw response.
+          description: Search using the Unique Record Identifier (URI) returned in the RNG response.
         - schema:
             type: string
           in: query
           name: client-record-id
-          description: Search using the clientRecordId sent in the draw request.
+          description: Search using the clientRecordId sent in the RNG request.
     parameters: []
 security: []
 tags:
