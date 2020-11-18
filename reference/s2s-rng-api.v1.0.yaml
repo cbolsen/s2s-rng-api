@@ -164,15 +164,19 @@ components:
             blockType:
               type: string
               description: Security block type identifier.
+              example: s2s
             version:
               type: string
               description: Format version of the security block.
+              example: 1.0
             keyId:
               type: string
               description: 'Identifier of the public key needed to verify the security block, if applicable.'
+              example: 308C-1328-3940-DC32
             data:
               type: string
               description: Base 64 encoded content of the security block.
+              example: VGhpcyBpcyBhbiBleGFtcGxl
           required:
             - blockType
     SecurityRequests:
@@ -563,30 +567,30 @@ paths:
                           type: string
                           description: The time of the last RNG request for this product.
                           format: date-time
-                  cards:
+                  hsms:
                     type: array
-                    description: Status of the configured Spyrus HSM cards.
+                    description: Status of the configured hardware security modules.
                     items:
                       type: object
                       properties:
                         slot:
                           type: integer
-                          description: Slot number of the HSM card.
+                          description: Slot number of the HSM.
                         active:
                           type: boolean
-                          description: Indicates the currently active HSM card.
+                          description: Indicates the currently active HSM.
                         status:
                           type: string
-                          description: Current status description for this card.
+                          description: Current status description for this HSM.
                         serial:
                           type: string
                           description: Serial number of the HSM.
                           example: 01000000F00019C8
                         sequencer:
                           type: integer
-                          description: Current value of the HSM card's sequencer.
+                          description: Current value of the HSM's sequencer.
                         lastErrorCode:
-                          description: 'The error code of the most recent card error, if any.'
+                          description: 'The error code of the most recent HSM error, if any.'
                           type: integer
                         lastErrorTime:
                           type: string
@@ -615,7 +619,7 @@ paths:
                         type: INTEGER
                         requestCount: 1
                         lastRequestTime: '2019-08-24T14:15:22Z'
-                    cards:
+                    hsms:
                       - slot: 0
                         active: true
                         status: OK
