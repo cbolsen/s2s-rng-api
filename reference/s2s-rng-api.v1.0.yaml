@@ -87,8 +87,8 @@ components:
           description: Specifies method of depletion for the distribution values.
           example: NO_DEPLETION
       x-examples: {}
-    UserData:
-      title: UserData
+    ClientData:
+      title: ClientData
       type: array
       description: Optional data fields that are signed and logged. They can also be extracted and used in post-processing and reports.
       items:
@@ -219,8 +219,8 @@ components:
           description: 'Identifier of the product to be generated. The product defines all RNG parameters, and MAY allow them to be overridden in the RNG matrix structure.'
         rngMatrix:
           $ref: '#/components/schemas/RngMatrix'
-        userData:
-          $ref: '#/components/schemas/UserData'
+        clientData:
+          $ref: '#/components/schemas/ClientData'
       required:
         - productId
     BatchResponse:
