@@ -154,7 +154,7 @@ components:
         version:
           type: string
           description: Format version of the security block.
-          example: 1.0
+          example: '1.0'
       required:
         - blockType
     SecurityBlock:
@@ -170,7 +170,7 @@ components:
             version:
               type: string
               description: Format version of the security block.
-              example: 1.0
+              example: '1.0'
             keyId:
               type: string
               description: 'Identifier of the public key needed to verify the security block, if applicable.'
