@@ -6,7 +6,8 @@ info:
   contact:
     url: 'http://www.szrek.com'
 servers:
-  - url: 'http://localhost:55002/s2s-rng-api/v1.0'
+  - url: 'http://server:55002/s2s/api/rng/v1.0'
+    description: Trusted Draw RNG server example
 components:
   schemas:
     DrawUser:
