@@ -150,9 +150,11 @@ components:
         blockType:
           type: string
           description: Security block type identifier.
+          example: s2s
         version:
           type: string
           description: Format version of the security block.
+          example: 1.0
       required:
         - blockType
     SecurityBlock:
