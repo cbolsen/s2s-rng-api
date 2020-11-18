@@ -150,7 +150,7 @@ components:
         blockType:
           type: string
           description: Security block type identifier.
-          example: s2s
+          example: S2S
         version:
           type: string
           description: Format version of the security block.
@@ -166,9 +166,6 @@ components:
             blockType:
               type: string
               description: Security block type identifier.
-              enum:
-                - ELSYM_IGT
-                - S2S
               example: S2S
             version:
               type: string
