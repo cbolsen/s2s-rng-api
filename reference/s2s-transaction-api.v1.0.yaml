@@ -9,8 +9,8 @@ servers:
   - url: 'http://localhost:55002/s2s-transaction-api/v1.0'
 components:
   schemas:
-    UserData:
-      title: UserData
+    ClientData:
+      title: ClientData
       type: array
       description: Optional data fields that are signed and logged. They can also be extracted and used in post-processing and reports.
       items:
@@ -88,8 +88,8 @@ components:
           type: string
           description: Client's unique identifier for this record
           example: RQID-31234545-32
-        userData:
-          $ref: '#/components/schemas/UserData'
+        clientData:
+          $ref: '#/components/schemas/ClientData'
     BatchResponse:
       title: BatchResponse
       type: object
@@ -178,8 +178,8 @@ components:
           format: date-time
           description: Timestamp of the stored record
           example: '2020-09-30T18:30:23Z'
-        userData:
-          $ref: '#/components/schemas/UserData'
+        clientData:
+          $ref: '#/components/schemas/ClientData'
   responses:
     BadRequestResponse:
       description: Bad Request
@@ -273,9 +273,9 @@ paths:
                     type: integer
                     description: Current business day for this transaction server. Format is YYMMDD.
                     example: 200930
-                  cards:
+                  hsm:
                     type: array
-                    description: Status of the configured Lynks HSM cards
+                    description: Status of the configured hardware security modules
                     items:
                       type: object
                       properties:
