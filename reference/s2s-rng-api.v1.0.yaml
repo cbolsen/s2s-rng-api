@@ -256,19 +256,12 @@ components:
       title: RngResult
       type: object
       properties:
+        rngStatus:
+          $ref: '#/components/schemas/Status'
         clientRecordId:
           type: string
           description: Client's unique identifier for this RNG request.
           example: RQID-31234545-32
-        rngStatus:
-          $ref: '#/components/schemas/Status'
-        sets:
-          type: array
-          description: Numbers generated
-          items:
-            type: array
-            items:
-              type: integer
         recordId:
           type: string
           description: Unique record identifier.
@@ -288,6 +281,13 @@ components:
           format: date-time
           description: Date and timestamp of the random generation.
           example: '2020-09-30T18:30:23Z'
+        sets:
+          type: array
+          description: Numbers generated
+          items:
+            type: array
+            items:
+              type: integer
       required:
         - rng
     TestMode:
