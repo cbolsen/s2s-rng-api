@@ -191,26 +191,26 @@ components:
         clientId:
           type: string
           description: Name or identifier of the client system.
-          example: 'GAMESERVER-1'
-        clientTransactionId:
-          type: integer
-          description: Client's unique identifier for this transaction.
-          format: int64
-          example: 102030450
-        clientBusinessDay:
-          type: integer
-          description: Client's current business day. Format is YYMMDD.
-          example: 200930
+          example: GAMESERVER-1
         clientTime:
           type: string
           format: date-time
           description: Time on the client system.
           example: '2020-09-30T18:30:23Z'
+        clientBusinessDay:
+          type: integer
+          description: Client's current business day. Format is YYMMDD.
+          example: 200930
+        clientTransactionId:
+          type: integer
+          description: Client's unique identifier for this transaction.
+          format: int64
+          example: 102030450
     RngRequest:
       title: RngRequest
       type: object
       properties:
-        clientRequestId:
+        clientRecordId:
           type: string
           description: Client's unique identifier for this RNG request.
           example: RQID-31234545-32
@@ -250,7 +250,7 @@ components:
       title: RngResult
       type: object
       properties:
-        clientRequestId:
+        clientRecordId:
           type: string
           description: Client's unique identifier for this RNG request.
           example: RQID-31234545-32
@@ -277,16 +277,16 @@ components:
         productChecksum:
           type: number
           description: CRC32 checksum of the product definition used for the random generation.
-        drawTime:
+        timestamp:
           type: string
           format: date-time
-          description: Timestamp of the random generation.
+          description: Date and timestamp of the random generation.
           example: '2020-09-30T18:30:23Z'
       required:
         - rng
     TestMode:
       type: boolean
-      description: Marks the draw results as "test mode" and not valid for use.
+      description: Marks the draw as "test mode" and not valid for use.
       x-userDataIndex: 1
     DrawUsers:
       description: 'Draw participants to be included in the draw reports. The first user is the Draw Manager, second user is the Draw Auditor, and third is the Draw Observer.'
@@ -319,7 +319,7 @@ paths:
     post:
       summary: Quick Pick RNG
       operationId: post-rng-quick-picks
-      description: Conduct RNG for q. Returns reduced-size results for performance.
+      description: Conduct RNG for quick pick products. Returns reduced-size results for performance.
       responses:
         '200':
           description: OK
@@ -364,7 +364,7 @@ paths:
   /rng/file-draws:
     post:
       summary: File Draw
-      operationId: post-draws-file-draws
+      operationId: post-rng-file-draws
       description: Conduct draws for file-based draw products.
       responses:
         '200':
