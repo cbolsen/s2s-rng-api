@@ -5,9 +5,10 @@ info:
   description: Szrek2Solutions Random Number Generator API
   contact:
     url: 'http://www.szrek.com'
+    email: info@szrek.com
 servers:
-  - url: 'http://server:55002/s2s/api/rng/v1.0'
-    description: Trusted Draw RNG server example
+  - url: 'http://server:55002/api/v1'
+    description: API server example
 components:
   schemas:
     DrawUser:
@@ -243,6 +244,11 @@ components:
           example: 102030450
         status:
           $ref: '#/components/schemas/Status'
+        timestamp:
+          type: string
+          format: date-time
+          description: Date and time the request was processed.
+          example: '2020-09-30T18:30:23Z'
         serverId:
           type: string
           example: RNG-TEST-87
@@ -279,11 +285,6 @@ components:
         productChecksum:
           type: number
           description: CRC32 checksum of the product definition used for the random generation.
-        timestamp:
-          type: string
-          format: date-time
-          description: Date and timestamp of the random generation.
-          example: '2020-09-30T18:30:23Z'
         sets:
           type: array
           description: Numbers generated
@@ -323,6 +324,7 @@ components:
                     message: Product not found
                     fieldName: productId
                     path: 'rngRequests[1].productId'
+  securitySchemes: {}
 paths:
   /rng/quick-picks:
     post:
