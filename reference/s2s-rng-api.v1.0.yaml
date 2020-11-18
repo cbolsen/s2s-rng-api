@@ -61,6 +61,7 @@ components:
           type: array
           description: Values to be excluded from the generation.
           uniqueItems: true
+          maxItems: 65535
           items:
             type: integer
             example: 0
@@ -72,10 +73,12 @@ components:
       title: Distribution
       type: object
       description: Initial distribution values and depletion type used for table-type products.
+      x-examples: {}
       properties:
         values:
           type: array
           description: Initial distribution values.
+          maxItems: 64
           items:
             type: integer
         depletionType:
@@ -86,7 +89,6 @@ components:
             - REMOVE_ENTRY
           description: Specifies method of depletion for the distribution values.
           example: NO_DEPLETION
-      x-examples: {}
     ClientData:
       title: ClientData
       type: array
@@ -289,7 +291,7 @@ components:
             items:
               type: integer
       required:
-        - rng
+        - rngStatus
     TestMode:
       type: boolean
       description: Marks the draw as "test mode" and not valid for use.
@@ -660,23 +662,26 @@ paths:
                     $ref: '#/components/schemas/RngResult'
                   hsm:
                     $ref: ./s2s-transaction-api.v1.0.yaml#/components/schemas/SecurityModule
+                  clientData:
+                    $ref: '#/components/schemas/ClientData'
         '400':
           description: Bad Request
         '404':
           description: Not Found
       operationId: get-rng-verification
-      description: Retrieves and verifies a previously generated RNG record. Parameter MUST include one of either unique-record-id or client-record-id.
+      description: Retrieves and verifies a previously generated RNG record.
       parameters:
         - schema:
             type: string
           in: query
-          name: unique-record-id
+          name: record-id
           description: Search using the Unique Record Identifier (URI) returned in the RNG response.
+          required: true
         - schema:
-            type: string
+            type: integer
           in: query
-          name: client-record-id
-          description: Search using the clientRecordId sent in the RNG request.
+          name: record-handle
+          description: The recordHandle returned in RNG response. May improve response time.
     parameters: []
 security: []
 tags:
