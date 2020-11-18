@@ -166,7 +166,10 @@ components:
             blockType:
               type: string
               description: Security block type identifier.
-              example: s2s
+              enum:
+                - ELSYM_IGT
+                - S2S
+              example: S2S
             version:
               type: string
               description: Format version of the security block.
@@ -469,8 +472,8 @@ paths:
                                   type: integer
                                 rngMatrix:
                                   $ref: '#/components/schemas/RngMatrix'
-                      securityBlocks:
-                        $ref: '#/components/schemas/SecurityBlocks'
+                                securityBlocks:
+                                  $ref: '#/components/schemas/SecurityBlocks'
               examples: {}
         '400':
           $ref: '#/components/responses/BadRequestResponse'
