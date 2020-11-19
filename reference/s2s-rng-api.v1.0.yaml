@@ -753,7 +753,7 @@ paths:
                           - $ref: '#/components/schemas/RngRequest'
                           - $ref: '#/components/schemas/RegularDrawUserData'
                           - $ref: '#/components/schemas/FileDrawUserData'
-                        description: Original RNG request.
+                        description: The original RNG request.
                       rngResult:
                         allOf:
                           - type: object
@@ -763,7 +763,7 @@ paths:
                             properties:
                               rngMatrix:
                                 $ref: '#/components/schemas/RngMatrix'
-                        description: Generated RNG result
+                        description: The regenerated RNG results.
                       hsm:
                         $ref: '#/components/schemas/SecurityModule'
                       extractFields:

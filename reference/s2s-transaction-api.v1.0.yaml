@@ -388,10 +388,12 @@ paths:
                               clientTransactionId:
                                 $ref: '#/components/schemas/ClientTransactionId'
                           - $ref: '#/components/schemas/SignRequest'
+                        description: The original signing request.
                       signResult:
                         allOf:
                           - $ref: '#/components/schemas/TransactionTime'
                           - $ref: '#/components/schemas/SignResult'
+                        description: The original signing result.
                       hsm:
                         $ref: '#/components/schemas/SecurityModule'
                       extractFields:
