@@ -188,6 +188,7 @@ components:
           example: 200930
     ExtractFields:
       type: array
+      description: Name/value pairs as would be generated in a CSV extract file.
       items:
         type: object
         description: Name/value pairs as would be generated in a CSV extract file.
