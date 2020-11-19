@@ -626,40 +626,44 @@ paths:
                               items:
                                 type: integer
                                 maximum: 64
+                          required:
+                            - id
+                            - name
+                            - type
+                            - requestCount
                       hsms:
                         type: array
                         description: Status of the configured hardware security modules.
                         items:
-                          type: object
-                          properties:
-                            slot:
-                              type: integer
-                              description: Slot number of the HSM.
-                            active:
-                              type: boolean
-                              description: Indicates the currently active HSM.
-                            status:
-                              type: string
-                              description: Current status description for this HSM.
-                            serial:
-                              type: string
-                              description: Serial number of the HSM.
-                              example: 01000000F00019C8
-                            sequencer:
-                              type: integer
-                              description: Current value of the HSM's sequencer.
-                            lastErrorCode:
-                              description: 'The error code of the most recent HSM error, if any.'
-                              type: integer
-                            lastErrorTime:
-                              type: string
-                              description: 'The time of the last error code, if any.'
-                              format: date-time
-                            keyId:
-                              type: string
-                              description: Identifier of the key pair currently in use on the HSM.
-                              format: binary
-                              example: 08C-1328-3940-DC32
+                          allOf:
+                            - type: object
+                              properties:
+                                slot:
+                                  type: integer
+                                  description: Slot number of the HSM.
+                                active:
+                                  type: boolean
+                                  description: Indicates the currently active HSM.
+                                status:
+                                  type: string
+                                  description: Current status description for this HSM.
+                              required:
+                                - slot
+                                - active
+                                - status
+                            - $ref: '#/components/schemas/SecurityModule'
+                            - type: object
+                              properties:
+                                lastErrorCode:
+                                  description: 'The error code of the most recent HSM error, if any.'
+                                  type: integer
+                                lastErrorTime:
+                                  type: string
+                                  description: 'The time of the last error code, if any.'
+                                  format: date-time
+                    required:
+                      - serverTime
+                      - businessDay
               examples:
                 Example 1:
                   value:
