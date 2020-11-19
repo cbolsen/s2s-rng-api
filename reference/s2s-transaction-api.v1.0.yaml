@@ -191,7 +191,7 @@ components:
       description: Name/value pairs as would be generated in a CSV extract file.
       items:
         type: object
-        description: Name/value pairs as would be generated in a CSV extract file.
+        description: ''
         properties:
           name:
             type: string
