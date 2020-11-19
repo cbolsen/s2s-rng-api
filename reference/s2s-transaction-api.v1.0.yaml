@@ -92,8 +92,8 @@ components:
           properties:
             clientTransactionId:
               $ref: '#/components/schemas/ClientTransactionId'
-    StoreRequest:
-      title: TransactionRequest
+    SignRequest:
+      title: SignRequest
       type: object
       properties:
         clientRecordId:
@@ -115,16 +115,12 @@ components:
           required:
             - status
         - $ref: '#/components/schemas/TransactionTime'
-    StoreResult:
-      title: StoreResult
+    SignResult:
+      title: SignResult
       type: object
       properties:
-        status:
+        signStatus:
           $ref: '#/components/schemas/Status'
-        clientRecordId:
-          type: string
-          description: Client's unique identifier for this record
-          example: RQID-31234545-32
         recordId:
           type: string
           description: Unique record identifier for the stored record
@@ -146,7 +142,7 @@ components:
           example: 01000000F00019C8
         sequencer:
           type: integer
-          description: Sequence number of the HsM.
+          description: Sequence number of the HSM.
           example: 734595
         time:
           type: string
@@ -156,27 +152,6 @@ components:
           type: string
           description: Identifier of the RSA key pair on the HSM.
           example: 308C-1328-3940-DC32
-    StoredRecord:
-      title: StoredRecord
-      type: object
-      properties:
-        clientRecordId:
-          type: string
-          description: Client's unique identifier for this record
-          example: RQID-31234545-32
-        status:
-          $ref: '#/components/schemas/Status'
-        recordId:
-          type: string
-          description: Unique record identifier for the stored record
-          example: EX191109870000000125
-        timestamp:
-          type: string
-          format: date-time
-          description: Timestamp of the stored record
-          example: '2020-09-30T18:30:23Z'
-        clientData:
-          $ref: '#/components/schemas/ClientData'
     ServerInfo:
       title: ServerInfo
       type: object
@@ -184,11 +159,11 @@ components:
         serverId:
           type: string
           example: RNG-TEST-87
-          description: RNG server identifier.
+          description: Transaction server identifier.
         serverVersion:
           type: string
           example: '9.3'
-          description: RNG server version number.
+          description: Transaction server version number.
       required:
         - serverId
         - serverVersion
@@ -232,7 +207,7 @@ components:
 paths:
   /transactions:
     post:
-      summary: Store a Transaction
+      summary: Sign a Transaction
       operationId: post-transactions
       description: Sign and store a transaction in the block chain file.
       responses:
@@ -250,7 +225,13 @@ paths:
                         description: 'Array of results records, corresponding to the array of requests'
                         items:
                           allOf:
-                            - $ref: '#/components/schemas/StoreResult'
+                            - type: object
+                              properties:
+                                clientRecordId:
+                                  type: string
+                                  description: Client's unique identifier for this record
+                                  example: RQID-31234545-32
+                            - $ref: '#/components/schemas/SignResult'
               examples: {}
         '400':
           $ref: '#/components/responses/BadRequestResponse'
@@ -263,14 +244,14 @@ paths:
                 - $ref: '#/components/schemas/BatchRequest'
                 - type: object
                   properties:
-                    storeRequests:
-                      description: One or more record store requests to be processed
+                    signRequests:
+                      description: One or more record sign requests to be processed
                       type: array
                       items:
                         allOf:
-                          - $ref: '#/components/schemas/StoreRequest'
+                          - $ref: '#/components/schemas/SignRequest'
                   required:
-                    - storeRequests
+                    - signRequests
             examples: {}
       parameters: []
       tags:
@@ -368,7 +349,7 @@ paths:
     parameters: []
   /transactions/verification:
     get:
-      summary: Verify Stored Transaction
+      summary: Verify Signed Transaction
       tags:
         - Transactions
       responses:
@@ -377,12 +358,39 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  record:
-                    $ref: '#/components/schemas/StoredRecord'
-                  hsm:
-                    $ref: '#/components/schemas/SecurityModule'
+                allOf:
+                  - $ref: '#/components/schemas/ServerInfo'
+                  - type: object
+                    properties:
+                      verificationStatus:
+                        $ref: '#/components/schemas/Status'
+                      signRequest:
+                        allOf:
+                          - $ref: '#/components/schemas/ClientInfo'
+                          - type: object
+                            properties:
+                              clientTransactionId:
+                                $ref: '#/components/schemas/ClientTransactionId'
+                          - $ref: '#/components/schemas/SignRequest'
+                      signResult:
+                        allOf:
+                          - $ref: '#/components/schemas/TransactionTime'
+                          - $ref: '#/components/schemas/SignResult'
+                      hsm:
+                        $ref: '#/components/schemas/SecurityModule'
+                      extractFields:
+                        type: object
+                        description: Name/value pairs as would be generated in a CSV extract file.
+                        properties:
+                          name:
+                            type: string
+                            description: Column name for the CSV extract field.
+                          value:
+                            type: string
+                            description: 'Value of the extract field, formatted for CSV.'
+                        required:
+                          - name
+                          - value
         '400':
           description: Bad Request
           content:
