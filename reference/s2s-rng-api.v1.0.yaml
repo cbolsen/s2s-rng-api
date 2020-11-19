@@ -415,7 +415,7 @@ components:
 paths:
   /rng/quick-picks:
     post:
-      summary: Quick Pick RNG
+      summary: Quick Pick
       operationId: post-rng-quick-picks
       description: Conduct RNG for quick pick products. Returns reduced-size results for performance.
       responses:
