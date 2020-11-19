@@ -710,9 +710,8 @@ paths:
                     allOf:
                       - $ref: '#/components/schemas/BatchDrawRequest'
                       - $ref: '#/components/schemas/RngRequest'
-                      - oneOf:
-                          - $ref: '#/components/schemas/RegularDrawUserData'
-                          - $ref: '#/components/schemas/FileDrawUserData'
+                      - $ref: '#/components/schemas/RegularDrawUserData'
+                      - $ref: '#/components/schemas/FileDrawUserData'
                   rngResult:
                     allOf:
                       - $ref: '#/components/schemas/BatchResponse'
