@@ -166,23 +166,23 @@ components:
     SecurityModule:
       title: SecurityModule
       type: object
-      description: 'Details about the cryptographic Hardware Security Module (HSM). '
+      description: 'Details about the cryptographic Hardware Security Module (HSM).'
       properties:
         serial:
           type: string
-          description: Serial number of the device used.
+          description: Serial number of the HSM.
           example: 01000000F00019C8
         sequencer:
           type: integer
-          description: Sequence number assigned by the device.
+          description: Sequence number on the HSM.
           example: 734595
         time:
           type: string
-          description: Real-time clock value at the time of signing.
+          description: Real-time clock value on the HSM.
           example: '2020-09-30T18:30:23Z'
         keyId:
           type: string
-          description: Identifier of the key pair currently in use on the HSM.
+          description: Identifier of the RSA key pair on the HSM.
           example: 308C-1328-3940-DC32
     SecurityBlock:
       allOf:

@@ -92,27 +92,21 @@ components:
           $ref: '#/components/schemas/ClientData'
     BatchResponse:
       title: BatchResponse
-      type: object
-      properties:
-        clientTransactionId:
-          type: integer
-          description: Client's unique ID for this transaction
-          format: int64
-          example: 102030450
-        status:
-          $ref: '#/components/schemas/Status'
-        serverId:
-          type: string
-          example: RNG-TEST-87
-          description: Transaction server identifier
-        serverVersion:
-          type: string
-          example: '9.3'
-          description: Transaction server version number
-        businessDay:
-          type: integer
-          description: Business day under which the transaction was recorded. Format is YYMMDD.
-          example: 200930
+      allOf:
+        - $ref:
+        - type: object
+          properties:
+            clientTransactionId:
+              type: integer
+              description: Client's unique ID for this transaction
+              format: int64
+              example: 102030450
+            status:
+              $ref: '#/components/schemas/Status'
+            businessDay:
+              type: integer
+              description: Business day under which the transaction was recorded. Format is YYMMDD.
+              example: 200930
     StoreResult:
       title: StoreResult
       type: object
@@ -141,7 +135,7 @@ components:
     SecurityModule:
       title: SecurityModule
       type: object
-      description: 'Details about the cryptographic Hardware Security Module (HSM). '
+      description: Details about the cryptographic Hardware Security Module (HSM).
       properties:
         serial:
           type: string
@@ -157,7 +151,7 @@ components:
           example: '2020-09-30T18:30:23Z'
         keyId:
           type: string
-          description: Identifier of the key pair on the HSM.
+          description: Identifier of the RSA key pair on the HSM.
           example: 308C-1328-3940-DC32
     StoredRecord:
       title: StoredRecord
@@ -180,6 +174,40 @@ components:
           example: '2020-09-30T18:30:23Z'
         clientData:
           $ref: '#/components/schemas/ClientData'
+    ServerInfo:
+      title: ServerInfo
+      type: object
+      properties:
+        serverId:
+          type: string
+          example: RNG-TEST-87
+          description: RNG server identifier.
+        serverVersion:
+          type: string
+          example: '9.3'
+          description: RNG server version number.
+      required:
+        - serverId
+        - serverVersion
+    ClientTransactionId:
+      title: ClientTransactionId
+      type: integer
+      description: Client's unique identifier for this transaction.
+      format: int64
+      example: 102030450
+    TransactionTime:
+      title: TransactionTime
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Date and time the request was processed.
+          example: '2020-09-30T18:30:23Z'
+        businessDay:
+          type: integer
+          description: Business day under which the transaction was recorded. Format is YYMMDD.
+          example: 200930
   responses:
     BadRequestResponse:
       description: Bad Request
@@ -254,59 +282,49 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  serverId:
-                    type: string
-                    example: RNG-TEST-87
-                    description: Transaction server identifier
-                  serverVersion:
-                    type: string
-                    example: '9.3'
-                    description: Transaction server version number
-                  serverTime:
-                    type: string
-                    format: date-time
-                    example: '2020-09-30T18:30:23Z'
-                    description: Current system time of the transaction server
-                  businessDay:
-                    type: integer
-                    description: Current business day for this transaction server. Format is YYMMDD.
-                    example: 200930
-                  hsm:
-                    type: array
-                    description: Status of the configured hardware security modules
-                    items:
-                      type: object
-                      properties:
-                        slot:
-                          type: integer
-                          description: Slot number of the HSM card
-                        active:
-                          type: boolean
-                          description: Indicates the currently active HSM card
-                        status:
-                          type: string
-                          description: Current status description for this card
-                        serial:
-                          type: string
-                          description: Serial number of the HSM
-                          example: 01000000F00019C8
-                        sequencer:
-                          type: integer
-                          description: Current value of the HSM card's sequencer
-                        lastErrorCode:
-                          description: 'The error code of the most recent card error, if any'
-                          type: integer
-                        lastErrorTime:
-                          type: string
-                          description: 'The time of the last error code, if any'
-                          format: date-time
-                        keyId:
-                          type: string
-                          description: Identifier of the key pair currently in use on the HSM
-                          format: binary
-                          example: 08C-1328-3940-DC32
+                allOf:
+                  - $ref: '#/components/schemas/ServerInfo'
+                  - type: object
+                    properties:
+                      serverTime:
+                        type: string
+                        format: date-time
+                        example: '2020-09-30T18:30:23Z'
+                        description: Current system time of the RNG server.
+                      businessDay:
+                        type: integer
+                        description: Current business day for this RNG server. Format is YYMMDD.
+                        example: 200930
+                      hsms:
+                        type: array
+                        description: Status of the configured hardware security modules.
+                        items:
+                          allOf:
+                            - type: object
+                              properties:
+                                slot:
+                                  type: integer
+                                  description: Slot number of the HSM.
+                                active:
+                                  type: boolean
+                                  description: Indicates the currently active HSM.
+                                status:
+                                  type: string
+                                  description: Current status description for this HSM.
+                              required:
+                                - slot
+                                - active
+                                - status
+                            - $ref: '#/components/schemas/SecurityModule'
+                            - type: object
+                              properties:
+                                lastErrorCode:
+                                  description: 'The error code of the most recent HSM error, if any.'
+                                  type: integer
+                                lastErrorTime:
+                                  type: string
+                                  description: 'The time of the last error code, if any.'
+                                  format: date-time
               examples:
                 Example 1:
                   value:
