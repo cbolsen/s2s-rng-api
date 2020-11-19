@@ -693,10 +693,48 @@ paths:
                 properties:
                   retrievalStatus:
                     $ref: '#/components/schemas/Status'
+                  rngRequest:
+                    allOf:
+                      - properties:
+                          testMode:
+                            $ref: '#/components/schemas/TestMode'
+                          drawUsers:
+                            $ref: '#/components/schemas/DrawUsers'
+                          clientTransactionId:
+                            type: integer
+                            description: ''
+                            format: int64
+                          clientTime:
+                            type: string
+                          clientId:
+                            type: string
+                        type: object
+                      - $ref: '#/components/schemas/RngRequest'
+                      - type: object
+                        properties:
+                          drawHash:
+                            type: string
+                          drawText:
+                            type: string
+                          fileHash:
+                            type: string
+                          fileName:
+                            type: string
+                  rngResult:
+                    allOf:
+                      - type: object
+                        properties:
+                          timestamp:
+                            type: string
+                          businessDay:
+                            type: string
+                      - $ref: '#/components/schemas/RngResult'
+                      - type: object
+                        properties:
+                          rngMatrix:
+                            $ref: '#/components/schemas/RngMatrix'
                   hsm:
                     $ref: '#/components/schemas/SecurityModule'
-                  clientData:
-                    $ref: '#/components/schemas/ClientData'
                   extractFields:
                     type: object
                     description: Name/value pairs as would be generated in a CSV extract file.
