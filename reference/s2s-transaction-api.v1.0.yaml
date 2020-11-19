@@ -186,6 +186,21 @@ components:
           type: integer
           description: Business day under which the transaction was recorded. Format is YYMMDD.
           example: 200930
+    ExtractFields:
+      type: array
+      items:
+        type: object
+        description: Name/value pairs as would be generated in a CSV extract file.
+        properties:
+          name:
+            type: string
+            description: Column name for the CSV extract field.
+          value:
+            type: string
+            description: 'Value of the extract field, formatted for CSV.'
+        required:
+          - name
+          - value
   responses:
     BadRequestResponse:
       description: Bad Request
@@ -379,18 +394,7 @@ paths:
                       hsm:
                         $ref: '#/components/schemas/SecurityModule'
                       extractFields:
-                        type: object
-                        description: Name/value pairs as would be generated in a CSV extract file.
-                        properties:
-                          name:
-                            type: string
-                            description: Column name for the CSV extract field.
-                          value:
-                            type: string
-                            description: 'Value of the extract field, formatted for CSV.'
-                        required:
-                          - name
-                          - value
+                        $ref: '#/components/schemas/ExtractFields'
         '400':
           description: Bad Request
           content:
