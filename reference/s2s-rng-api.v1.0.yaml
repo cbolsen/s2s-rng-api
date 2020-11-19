@@ -74,7 +74,7 @@ components:
     Distribution:
       title: Distribution
       type: object
-      description: Initial distribution values and depletion type used for table-type products.
+      description: Initial distribution values and depletion type. Used for TABLE products only.
       x-examples: {}
       properties:
         values:
@@ -161,6 +161,27 @@ components:
           example: '1.0'
       required:
         - blockType
+    SecurityModule:
+      title: SecurityModule
+      type: object
+      description: 'Details about the cryptographic Hardware Security Module (HSM). '
+      properties:
+        serial:
+          type: string
+          description: Serial number of the device used.
+          example: 01000000F00019C8
+        sequencer:
+          type: integer
+          description: Sequence number assigned by the device.
+          example: 734595
+        time:
+          type: string
+          description: Real-time clock value at the time of signing.
+          example: '2020-09-30T18:30:23Z'
+        keyId:
+          type: string
+          description: Identifier of the key pair currently in use on the HSM.
+          example: 308C-1328-3940-DC32
     SecurityBlock:
       allOf:
         - $ref: '#/components/schemas/SecurityRequest'
@@ -574,6 +595,17 @@ paths:
                           type: string
                           description: The time of the last RNG request for this product.
                           format: date-time
+                        distribution:
+                          type: array
+                          description: Current distribution values. Applies to TABLE type products only
+                          items:
+                            type: integer
+                            maximum: 64
+                        distributionOverride:
+                          type: array
+                          items:
+                            type: integer
+                            maximum: 64
                   hsms:
                     type: array
                     description: Status of the configured hardware security modules.
@@ -660,13 +692,24 @@ paths:
                 type: object
                 properties:
                   retrievalStatus:
-                    $ref: ./s2s-transaction-api.v1.0.yaml#/components/schemas/Status
-                  rngResult:
-                    $ref: '#/components/schemas/RngResult'
+                    $ref: '#/components/schemas/Status'
                   hsm:
-                    $ref: ./s2s-transaction-api.v1.0.yaml#/components/schemas/SecurityModule
+                    $ref: '#/components/schemas/SecurityModule'
                   clientData:
                     $ref: '#/components/schemas/ClientData'
+                  extractFields:
+                    type: object
+                    description: Name/value pairs as would be generated in a CSV extract file.
+                    properties:
+                      name:
+                        type: string
+                        description: Column name for the CSV extract field.
+                      value:
+                        type: string
+                        description: 'Value of the extract field, formatted for CSV.'
+                    required:
+                      - name
+                      - value
         '400':
           description: Bad Request
         '404':
