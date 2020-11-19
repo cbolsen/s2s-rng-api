@@ -267,11 +267,6 @@ components:
       title: BatchResponse
       type: object
       properties:
-        clientTransactionId:
-          type: integer
-          description: Client's unique ID for this transaction.
-          format: int64
-          example: 102030450
         status:
           $ref: '#/components/schemas/Status'
         timestamp:
@@ -283,6 +278,11 @@ components:
           type: integer
           description: Business day under which the transaction was recorded. Format is YYMMDD.
           example: 200930
+        clientTransactionId:
+          type: integer
+          description: Client's unique ID for this transaction.
+          format: int64
+          example: 102030450
         serverId:
           type: string
           example: RNG-TEST-87
