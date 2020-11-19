@@ -237,6 +237,15 @@ components:
           description: Client's unique identifier for this transaction.
           format: int64
           example: 102030450
+    BatchDrawRequest:
+      allOf:
+        - $ref: '#/components/schemas/BatchRequest'
+        - type: object
+          properties:
+            testMode:
+              $ref: '#/components/schemas/TestMode'
+            drawUsers:
+              $ref: '#/components/schemas/DrawUsers'
     RngRequest:
       title: RngRequest
       type: object
@@ -270,6 +279,10 @@ components:
           format: date-time
           description: Date and time the request was processed.
           example: '2020-09-30T18:30:23Z'
+        businessDay:
+          type: integer
+          description: Business day under which the transaction was recorded. Format is YYMMDD.
+          example: 200930
         serverId:
           type: string
           example: RNG-TEST-87
@@ -278,10 +291,11 @@ components:
           type: string
           example: '9.3'
           description: RNG server version number.
-        businessDay:
-          type: integer
-          description: Business day under which the transaction was recorded. Format is YYMMDD.
-          example: 200930
+      required:
+        - status
+        - serverId
+        - serverVersion
+        - businessDay
     RngResult:
       title: RngResult
       type: object
@@ -327,6 +341,31 @@ components:
     ReturnRngMatrix:
       description: Include RNG parameter matrix in RNG results.
       type: boolean
+    FileDrawUserData:
+      title: FileDrawUserData
+      type: object
+      properties:
+        fileName:
+          type: string
+          description: Name of the file used for the draw.
+          example: PROMO-1.csv
+        fileHash:
+          type: string
+          description: SHA-1 hash of the file used for the draw.
+          format: binary
+          example: A54D88E06612D820BC3BE72877C74F257B561B19
+    RegularDrawUserData:
+      title: RegularDrawUserData
+      type: object
+      properties:
+        drawHash:
+          type: string
+          description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets.'
+          format: binary
+        drawText:
+          type: string
+          description: An extra text string that will appear in the draw reports and is also appended to the draw report file names.
+          example: PROMO-1
   responses:
     BadRequestResponse:
       description: Bad Request
@@ -432,31 +471,18 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/BatchRequest'
+                - $ref: '#/components/schemas/BatchDrawRequest'
                 - type: object
                   properties:
                     returnRngMatrix:
                       $ref: '#/components/schemas/ReturnRngMatrix'
-                    testMode:
-                      $ref: '#/components/schemas/TestMode'
-                    drawUsers:
-                      $ref: '#/components/schemas/DrawUsers'
                     rngRequests:
                       description: One or more RNG requests to be processed.
                       type: array
                       items:
                         allOf:
                           - $ref: '#/components/schemas/RngRequest'
-                          - type: object
-                            properties:
-                              fileName:
-                                type: string
-                                description: Name of the file used for the draw.
-                                example: PROMO-1
-                              fileHash:
-                                type: string
-                                description: SHA-1 hash of the file used for the draw.
-                                format: binary
+                          - $ref: '#/components/schemas/FileDrawUserData'
                     securityRequests:
                       $ref: '#/components/schemas/SecurityRequests'
                   required:
@@ -505,31 +531,18 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/BatchRequest'
+                - $ref: '#/components/schemas/BatchDrawRequest'
                 - type: object
                   properties:
                     returnRngMatrix:
                       $ref: '#/components/schemas/ReturnRngMatrix'
-                    testMode:
-                      $ref: '#/components/schemas/TestMode'
-                    drawUsers:
-                      $ref: '#/components/schemas/DrawUsers'
                     rngRequests:
                       description: One or more RNG requests to be processed.
                       type: array
                       items:
                         allOf:
                           - $ref: '#/components/schemas/RngRequest'
-                          - type: object
-                            properties:
-                              drawHash:
-                                type: string
-                                description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets.'
-                                format: binary
-                              drawText:
-                                type: string
-                                description: An extra text string that will appear in the draw reports and is also appended to the draw report file names.
-                                example: PROMO-1
+                          - $ref: '#/components/schemas/RegularDrawUserData'
                     securityRequests:
                       $ref: '#/components/schemas/SecurityRequests'
                   required:
@@ -695,19 +708,7 @@ paths:
                     $ref: '#/components/schemas/Status'
                   rngRequest:
                     allOf:
-                      - properties:
-                          clientTransactionId:
-                            type: integer
-                            description: ''
-                            format: int64
-                          clientTime:
-                            type: string
-                          clientId:
-                            type: string
-                          testMode:
-                            $ref: '#/components/schemas/TestMode'
-                          drawUsers:
-                            $ref: '#/components/schemas/DrawUsers'
+                      - $ref: '#/components/schemas/BatchDrawRequest'
                       - $ref: '#/components/schemas/RngRequest'
                       - type: object
                         properties:
@@ -721,12 +722,14 @@ paths:
                             type: string
                   rngResult:
                     allOf:
+                      - $ref: '#/components/schemas/BatchResponse'
                       - type: object
                         properties:
                           timestamp:
                             type: string
                           businessDay:
-                            type: string
+                            description: Business day under which the transaction was recorded. Format is YYMMDD.
+                            type: integer
                       - $ref: '#/components/schemas/RngResult'
                       - type: object
                         properties:
