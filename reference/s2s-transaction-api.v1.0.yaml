@@ -67,19 +67,31 @@ components:
           fieldErrors:
             - code: INVALID_VALUE
               message: not found
-    BatchRequest:
-      title: BatchRequest
+    ClientInfo:
+      title: ClientInfo
       type: object
       properties:
-        clientTransactionId:
-          type: integer
-          description: Client's unique ID for this transaction
-          format: int64
-          example: 102030450
+        clientId:
+          type: string
+          description: Name or identifier of the client system.
+          example: GAMESERVER-1
+        clientTime:
+          type: string
+          format: date-time
+          description: Time on the client system.
+          example: '2020-09-30T18:30:23Z'
         clientBusinessDay:
           type: integer
           description: Client's current business day. Format is YYMMDD.
           example: 200930
+    BatchRequest:
+      title: BatchRequest
+      allOf:
+        - $ref: '#/components/schemas/ClientInfo'
+        - type: object
+          properties:
+            clientTransactionId:
+              $ref: '#/components/schemas/ClientTransactionId'
     StoreRequest:
       title: TransactionRequest
       type: object
@@ -93,30 +105,26 @@ components:
     BatchResponse:
       title: BatchResponse
       allOf:
-        - $ref:
+        - $ref: '#/components/schemas/ServerInfo'
         - type: object
           properties:
             clientTransactionId:
-              type: integer
-              description: Client's unique ID for this transaction
-              format: int64
-              example: 102030450
+              $ref: '#/components/schemas/ClientTransactionId'
             status:
               $ref: '#/components/schemas/Status'
-            businessDay:
-              type: integer
-              description: Business day under which the transaction was recorded. Format is YYMMDD.
-              example: 200930
+          required:
+            - status
+        - $ref: '#/components/schemas/TransactionTime'
     StoreResult:
       title: StoreResult
       type: object
       properties:
+        status:
+          $ref: '#/components/schemas/Status'
         clientRecordId:
           type: string
           description: Client's unique identifier for this record
           example: RQID-31234545-32
-        status:
-          $ref: '#/components/schemas/Status'
         recordId:
           type: string
           description: Unique record identifier for the stored record
@@ -125,11 +133,6 @@ components:
           type: integer
           description: Handle that can optionally be used for faster retrieval
           format: int64
-        transactionTime:
-          type: string
-          format: date-time
-          description: Timestamp of the stored record
-          example: '2020-09-30T18:30:23Z'
       required:
         - status
     SecurityModule:

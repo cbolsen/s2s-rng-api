@@ -166,7 +166,7 @@ components:
     SecurityModule:
       title: SecurityModule
       type: object
-      description: 'Details about the cryptographic Hardware Security Module (HSM).'
+      description: Details about the cryptographic Hardware Security Module (HSM).
       properties:
         serial:
           type: string
@@ -217,8 +217,8 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/SecurityBlock'
-    BatchRequest:
-      title: BatchRequest
+    ClientInfo:
+      title: ClientInfo
       type: object
       properties:
         clientId:
@@ -234,8 +234,14 @@ components:
           type: integer
           description: Client's current business day. Format is YYMMDD.
           example: 200930
-        clientTransactionId:
-          $ref: '#/components/schemas/ClientTransactionId'
+    BatchRequest:
+      title: BatchRequest
+      allOf:
+        - $ref: '#/components/schemas/ClientInfo'
+        - type: object
+          properties:
+            clientTransactionId:
+              $ref: '#/components/schemas/ClientTransactionId'
     RngRequest:
       title: RngRequest
       type: object
@@ -344,11 +350,11 @@ components:
         serverId:
           type: string
           example: RNG-TEST-87
-          description: RNG server identifier.
+          description: Transaction server identifier.
         serverVersion:
           type: string
           example: '9.3'
-          description: RNG server version number.
+          description: Transaction server version number.
       required:
         - serverId
         - serverVersion
