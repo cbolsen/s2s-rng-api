@@ -110,6 +110,8 @@ components:
           type: string
           description: Short description of the error or status code.
           example: Success
+      required:
+        - code
     FieldError:
       title: FieldError
       type: object
@@ -233,19 +235,7 @@ components:
           description: Client's current business day. Format is YYMMDD.
           example: 200930
         clientTransactionId:
-          type: integer
-          description: Client's unique identifier for this transaction.
-          format: int64
-          example: 102030450
-    BatchDrawRequest:
-      allOf:
-        - $ref: '#/components/schemas/BatchRequest'
-        - type: object
-          properties:
-            testMode:
-              $ref: '#/components/schemas/TestMode'
-            drawUsers:
-              $ref: '#/components/schemas/DrawUsers'
+          $ref: '#/components/schemas/ClientTransactionId'
     RngRequest:
       title: RngRequest
       type: object
@@ -265,37 +255,17 @@ components:
         - productId
     BatchResponse:
       title: BatchResponse
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/Status'
-        timestamp:
-          type: string
-          format: date-time
-          description: Date and time the request was processed.
-          example: '2020-09-30T18:30:23Z'
-        businessDay:
-          type: integer
-          description: Business day under which the transaction was recorded. Format is YYMMDD.
-          example: 200930
-        clientTransactionId:
-          type: integer
-          description: Client's unique ID for this transaction.
-          format: int64
-          example: 102030450
-        serverId:
-          type: string
-          example: RNG-TEST-87
-          description: RNG server identifier.
-        serverVersion:
-          type: string
-          example: '9.3'
-          description: RNG server version number.
-      required:
-        - status
-        - serverId
-        - serverVersion
-        - businessDay
+      allOf:
+        - $ref: '#/components/schemas/ServerInfo'
+        - type: object
+          properties:
+            transactionStatus:
+              $ref: '#/components/schemas/Status'
+            clientTransactionId:
+              $ref: '#/components/schemas/ClientTransactionId'
+          required:
+            - transactionStatus
+        - $ref: '#/components/schemas/TransactionTime'
     RngResult:
       title: RngResult
       type: object
@@ -362,10 +332,45 @@ components:
           type: string
           description: 'A hash string that will be included in the signed data, such as the SHA-1 hash of the bets.'
           format: binary
+          example: B63C77E06612D820BC3BE72877C74F257B562A20
         drawText:
           type: string
           description: An extra text string that will appear in the draw reports and is also appended to the draw report file names.
           example: PROMO-1
+    ServerInfo:
+      title: ServerInfo
+      type: object
+      properties:
+        serverId:
+          type: string
+          example: RNG-TEST-87
+          description: RNG server identifier.
+        serverVersion:
+          type: string
+          example: '9.3'
+          description: RNG server version number.
+      required:
+        - serverId
+        - serverVersion
+    ClientTransactionId:
+      title: ClientTransactionId
+      type: integer
+      description: Client's unique identifier for this transaction.
+      format: int64
+      example: 102030450
+    TransactionTime:
+      title: TransactionTime
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Date and time the request was processed.
+          example: '2020-09-30T18:30:23Z'
+        businessDay:
+          type: integer
+          description: Business day under which the transaction was recorded. Format is YYMMDD.
+          example: 200930
   responses:
     BadRequestResponse:
       description: Bad Request
@@ -471,9 +476,13 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/BatchDrawRequest'
+                - $ref: '#/components/schemas/BatchRequest'
                 - type: object
                   properties:
+                    testMode:
+                      $ref: '#/components/schemas/TestMode'
+                    drawUsers:
+                      $ref: '#/components/schemas/DrawUsers'
                     returnRngMatrix:
                       $ref: '#/components/schemas/ReturnRngMatrix'
                     rngRequests:
@@ -531,9 +540,13 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/BatchDrawRequest'
+                - $ref: '#/components/schemas/BatchRequest'
                 - type: object
                   properties:
+                    testMode:
+                      $ref: '#/components/schemas/TestMode'
+                    drawUsers:
+                      $ref: '#/components/schemas/DrawUsers'
                     returnRngMatrix:
                       $ref: '#/components/schemas/ReturnRngMatrix'
                     rngRequests:
@@ -562,97 +575,91 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  serverId:
-                    type: string
-                    example: RNG-TEST-87
-                    description: RNG server identifier.
-                  serverVersion:
-                    type: string
-                    example: '9.3'
-                    description: RNG server version number.
-                  serverTime:
-                    type: string
-                    format: date-time
-                    example: '2020-09-30T18:30:23Z'
-                    description: Current system time of the RNG server.
-                  businessDay:
-                    type: integer
-                    description: Current business day for this RNG server. Format is YYMMDD.
-                    example: 200930
-                  products:
-                    type: array
-                    description: Configured products and status.
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                          description: Product identifier.
-                        name:
-                          type: string
-                          description: Product name.
-                        type:
-                          type: string
-                          enum:
-                            - INTEGER
-                            - TABLE
-                            - LOTTO
-                          example: INTEGER
-                          description: The configured RNG algorithm type for the product.
-                        requestCount:
-                          type: integer
-                          description: Current total number of RNG requests for this product.
-                        lastRequestTime:
-                          type: string
-                          description: The time of the last RNG request for this product.
-                          format: date-time
-                        distribution:
-                          type: array
-                          description: Current distribution values. Applies to TABLE type products only
-                          items:
-                            type: integer
-                            maximum: 64
-                        distributionOverride:
-                          type: array
-                          items:
-                            type: integer
-                            maximum: 64
-                  hsms:
-                    type: array
-                    description: Status of the configured hardware security modules.
-                    items:
-                      type: object
-                      properties:
-                        slot:
-                          type: integer
-                          description: Slot number of the HSM.
-                        active:
-                          type: boolean
-                          description: Indicates the currently active HSM.
-                        status:
-                          type: string
-                          description: Current status description for this HSM.
-                        serial:
-                          type: string
-                          description: Serial number of the HSM.
-                          example: 01000000F00019C8
-                        sequencer:
-                          type: integer
-                          description: Current value of the HSM's sequencer.
-                        lastErrorCode:
-                          description: 'The error code of the most recent HSM error, if any.'
-                          type: integer
-                        lastErrorTime:
-                          type: string
-                          description: 'The time of the last error code, if any.'
-                          format: date-time
-                        keyId:
-                          type: string
-                          description: Identifier of the key pair currently in use on the HSM.
-                          format: binary
-                          example: 08C-1328-3940-DC32
+                allOf:
+                  - $ref: '#/components/schemas/ServerInfo'
+                  - type: object
+                    properties:
+                      serverTime:
+                        type: string
+                        format: date-time
+                        example: '2020-09-30T18:30:23Z'
+                        description: Current system time of the RNG server.
+                      businessDay:
+                        type: integer
+                        description: Current business day for this RNG server. Format is YYMMDD.
+                        example: 200930
+                      products:
+                        type: array
+                        description: Configured products and status.
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              description: Product identifier.
+                            name:
+                              type: string
+                              description: Product name.
+                            type:
+                              type: string
+                              enum:
+                                - INTEGER
+                                - TABLE
+                                - LOTTO
+                              example: INTEGER
+                              description: The configured RNG algorithm type for the product.
+                            requestCount:
+                              type: integer
+                              description: Current total number of RNG requests for this product.
+                            lastRequestTime:
+                              type: string
+                              description: The time of the last RNG request for this product.
+                              format: date-time
+                            distribution:
+                              type: array
+                              description: Current distribution values. Applies to TABLE type products only
+                              items:
+                                type: integer
+                                maximum: 64
+                            distributionOverride:
+                              type: array
+                              items:
+                                type: integer
+                                maximum: 64
+                      hsms:
+                        type: array
+                        description: Status of the configured hardware security modules.
+                        items:
+                          type: object
+                          properties:
+                            slot:
+                              type: integer
+                              description: Slot number of the HSM.
+                            active:
+                              type: boolean
+                              description: Indicates the currently active HSM.
+                            status:
+                              type: string
+                              description: Current status description for this HSM.
+                            serial:
+                              type: string
+                              description: Serial number of the HSM.
+                              example: 01000000F00019C8
+                            sequencer:
+                              type: integer
+                              description: Current value of the HSM's sequencer.
+                            lastErrorCode:
+                              description: 'The error code of the most recent HSM error, if any.'
+                              type: integer
+                            lastErrorTime:
+                              type: string
+                              description: 'The time of the last error code, if any.'
+                              format: date-time
+                            keyId:
+                              type: string
+                              description: Identifier of the key pair currently in use on the HSM.
+                              format: binary
+                              example: 08C-1328-3940-DC32
               examples:
                 Example 1:
                   value:
@@ -702,46 +709,50 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  retrievalStatus:
-                    $ref: '#/components/schemas/Status'
-                  rngRequest:
-                    allOf:
-                      - $ref: '#/components/schemas/BatchDrawRequest'
-                      - $ref: '#/components/schemas/RngRequest'
-                      - $ref: '#/components/schemas/RegularDrawUserData'
-                      - $ref: '#/components/schemas/FileDrawUserData'
-                  rngResult:
-                    allOf:
-                      - $ref: '#/components/schemas/BatchResponse'
-                      - type: object
-                        properties:
-                          timestamp:
-                            type: string
-                          businessDay:
-                            description: Business day under which the transaction was recorded. Format is YYMMDD.
-                            type: integer
-                      - $ref: '#/components/schemas/RngResult'
-                      - type: object
-                        properties:
-                          rngMatrix:
-                            $ref: '#/components/schemas/RngMatrix'
-                  hsm:
-                    $ref: '#/components/schemas/SecurityModule'
-                  extractFields:
-                    type: object
-                    description: Name/value pairs as would be generated in a CSV extract file.
+                allOf:
+                  - $ref: '#/components/schemas/ServerInfo'
+                  - type: object
                     properties:
-                      name:
-                        type: string
-                        description: Column name for the CSV extract field.
-                      value:
-                        type: string
-                        description: 'Value of the extract field, formatted for CSV.'
-                    required:
-                      - name
-                      - value
+                      verificationStatus:
+                        $ref: '#/components/schemas/Status'
+                      rngRequest:
+                        allOf:
+                          - $ref: '#/components/schemas/BatchRequest'
+                          - type: object
+                            properties:
+                              testMode:
+                                $ref: '#/components/schemas/TestMode'
+                              drawUsers:
+                                $ref: '#/components/schemas/DrawUsers'
+                          - $ref: '#/components/schemas/RngRequest'
+                          - $ref: '#/components/schemas/RegularDrawUserData'
+                          - $ref: '#/components/schemas/FileDrawUserData'
+                        description: Original RNG request.
+                      rngResult:
+                        allOf:
+                          - type: object
+                          - $ref: '#/components/schemas/TransactionTime'
+                          - $ref: '#/components/schemas/RngResult'
+                          - type: object
+                            properties:
+                              rngMatrix:
+                                $ref: '#/components/schemas/RngMatrix'
+                        description: Generated RNG result
+                      hsm:
+                        $ref: '#/components/schemas/SecurityModule'
+                      extractFields:
+                        type: object
+                        description: Name/value pairs as would be generated in a CSV extract file.
+                        properties:
+                          name:
+                            type: string
+                            description: Column name for the CSV extract field.
+                          value:
+                            type: string
+                            description: 'Value of the extract field, formatted for CSV.'
+                        required:
+                          - name
+                          - value
         '400':
           description: Bad Request
         '404':
