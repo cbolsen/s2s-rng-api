@@ -389,7 +389,6 @@ components:
           value:
             type: string
             description: 'Value of the extract field, formatted for CSV.'
-          tmp: null
         required:
           - name
           - value
