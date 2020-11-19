@@ -696,10 +696,6 @@ paths:
                   rngRequest:
                     allOf:
                       - properties:
-                          testMode:
-                            $ref: '#/components/schemas/TestMode'
-                          drawUsers:
-                            $ref: '#/components/schemas/DrawUsers'
                           clientTransactionId:
                             type: integer
                             description: ''
@@ -708,7 +704,10 @@ paths:
                             type: string
                           clientId:
                             type: string
-                        type: object
+                          testMode:
+                            $ref: '#/components/schemas/TestMode'
+                          drawUsers:
+                            $ref: '#/components/schemas/DrawUsers'
                       - $ref: '#/components/schemas/RngRequest'
                       - type: object
                         properties:
